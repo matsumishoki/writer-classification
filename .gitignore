@@ -55,3 +55,39 @@ docs/_build/
 
 # PyBuilder
 target/
+
+#tif file
+*.tif
+
+#xml file
+*.xml
+
+#png file
+*.png
+
+#png h
+*.h
+
+#hpp file
+*.hpp
+
+#zip file
+*.zip
+
+#cpp file
+*.cpp
+
+#txt file
+*.txt
+
+#sln file
+*.sln
+
+#filters file
+*.filters
+
+#pdf file
+*.pdf
+
+#vcxproj
+*.vcxproj
