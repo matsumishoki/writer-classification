@@ -61,4 +61,4 @@ for filename in filenames:
     save_path = "C:\\Users\\matsumi\\Desktop\\writer classification\\CVL_ConvNet_data\\"
     saveFilename = save_path + name + ".png"   # name + 新しい拡張子(.png)
     print saveFilename
-    plt.imsave(saveFilename, image_data, cmap=plt.cm.gray)
+    plt.imsave(saveFilename, np.logical_not(image_data), cmap=plt.cm.gray)
