@@ -36,7 +36,7 @@ print "num_file:", num_file
 # グレースケール化し，二値化した後のファイルのtop_pathを指定する
 change_path = os.path.join("CVL_ConvNet_data")
 
-a = plt.imread(os.path.join(change_path, "0001-1-cropped.png"))
+a = plt.imread(os.path.join(change_path, "0001-1-cropped.tif"))
 y = a.shape[0]
 x = a.shape[1]
 l = a[50:(x-50), 400:(y-400)]
@@ -58,23 +58,7 @@ for filename in filenames:
     # 画像データの名前と拡張子を分離する
 
     name, ext = os.path.splitext(filename)
-    saveFilename = "C:\\Users\\matsumi\\Desktop\\CVL_ConvNet_data\\" + name + ".png"   # name + 新しい拡張子(.png)
+    save_path = "C:\\Users\\matsumi\\Desktop\\writer classification\\CVL_ConvNet_data\\"
+    saveFilename = save_path + name + ".png"   # name + 新しい拡張子(.png)
     print saveFilename
-    plt.imsave(saveFilename, image_data, cmap=plt.cm.gray)
-
-
-
-#for filename in filenames:
-#    loadFileFullpath = os.path.join(dirpath, filename)
-#    print loadFileFullpath
-#    # グレースケール化した後に二値化する
-#    image = plt.imread(os.path.join(dirpath, filename))
-#    image_gray = rgb2gray(image)
-#    thresh = threshold_otsu(image_gray)
-#    image_binary = image_gray > thresh
-#
-#    name, ext = os.path.splitext(filename)
-#    saveFilename = "C:\\Users\\matsumi\\Desktop\\CVL_ConvNet\\" + name + ".png"   # name + 新しい拡張子(.png)
-#    print saveFilename
-#    plt.imsave(saveFilename, image_binary, cmap=plt.cm.gray)
-
+    plt.imsave(saveFilename, np.logical_not(image_data), cmap=plt.cm.gray)
