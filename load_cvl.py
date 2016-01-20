@@ -50,12 +50,11 @@ print "num_x_start_point:", num_x_start_point
 # 横座標を固定で縦座標を変化させて200*200の画像を取得する
 # 端の余った画像部分は使用しない
 for x in range(num_x_start_point-1):
-    print "a"
-    print x
     x_point = x_start_point[x]
     for y in range(num_y_start_point-1):
-        print "b"
         y_point = y_start_point[y]
+        print "x_point:", x_point
+        print "y_point:", y_point
         cropped_image = image[y_point:y_point+200, x_point:x_point+200]
         plt.imshow(cropped_image, cmap=plt.cm.gray)
         plt.show()
