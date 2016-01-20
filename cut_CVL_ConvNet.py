@@ -51,15 +51,13 @@ for filename in filenames:
     image_gray = rgb2gray(image)
     thresh = threshold_otsu(image_gray)
     image_binary = image_gray > thresh
-    image_inv = np.logical_not(image_binary)
-    image_data = np.uint8(image_inv * 255)
 
     # 画像を横(左400，右400)，縦(上50,下50)切り取る
     image_cut_y = image_binary[0].shape
     image_cut_x = image_binary[1].shape
     image_data = image_binary[50:(x-50), 400:(y-400)]
-    # 画像データの名前と拡張子を分離する
 
+    # 画像データの名前と拡張子を分離する
     name, ext = os.path.splitext(filename)
     save_path = "C:\\Users\\matsumi\\Desktop\\writer classification\\CVL_ConvNet_data\\"
     saveFilename = save_path + name + ".png"   # name + 新しい拡張子(.png)
