@@ -30,17 +30,17 @@ num_file = len(filenames)
 
 change_path = os.path.join("CVL_ConvNet_data")
 
-cut_image = plt.imread(os.path.join(change_path, "0001-1-cropped.png"))
+image = plt.imread(os.path.join(change_path, "0001-1-cropped.png"))
 
 # 画像のy(縦座標)座標の総数を取得する
-cut_image_y = cut_image.shape[0]
+image_y = image.shape[0]
 
 # 画像のx座標(横座標)の総数を取得する
-cut_image_x = cut_image.shape[1]
+image_x = image.shape[1]
 
 # xとy共に200ずつの間隔で座標を取得する
-y_start_point = range(0, cut_image_y, 200)
-x_start_point = range(0, cut_image_x, 200)
+y_start_point = range(0, image_y, 200)
+x_start_point = range(0, image_x, 200)
 
 num_y_start_point = len(y_start_point)
 num_x_start_point = len(x_start_point)
@@ -56,5 +56,7 @@ for x in range(num_x_start_point-1):
     for y in range(num_y_start_point-1):
         print "b"
         y_point = y_start_point[y]
-        plt.imshow(cut_image[x_point:x_point+200, :200], cmap=plt.cm.gray)
-# plt.imshow(cut_image[:200, :200], cmap=plt.cm.gray)
+        cropped_image = image[y_point:y_point+200, x_point:x_point+200]
+        plt.imshow(cropped_image, cmap=plt.cm.gray)
+        plt.show()
+        plt.draw()
