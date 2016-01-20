@@ -38,9 +38,11 @@ image_y = image.shape[0]
 # 画像のx座標(横座標)の総数を取得する
 image_x = image.shape[1]
 
+# 画像サイズを指定する
+image_size = 200
 # xとy共に200ずつの間隔で座標を取得する
-y_start_point = range(0, image_y, 200)
-x_start_point = range(0, image_x, 200)
+y_start_point = range(0, image_y, image_size)
+x_start_point = range(0, image_x, image_size)
 
 num_y_start_point = len(y_start_point)
 num_x_start_point = len(x_start_point)
