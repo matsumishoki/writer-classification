@@ -10,6 +10,7 @@ import scipy as sp
 from xml.etree import ElementTree
 import os
 import skimage
+import skimage.io
 from skimage.color import rgb2gray
 from skimage.filters import threshold_otsu
 
@@ -50,6 +51,8 @@ for filename in filenames:
     image_gray = rgb2gray(image)
     thresh = threshold_otsu(image_gray)
     image_binary = image_gray > thresh
+    image_inv = np.logical_not(image_binary)
+    image_data = np.uint8(image_inv * 255)
 
     # 画像を横(左400，右400)，縦(上50,下50)切り取る
     image_cut_y = image_binary[0].shape
@@ -61,4 +64,4 @@ for filename in filenames:
     save_path = "C:\\Users\\matsumi\\Desktop\\writer classification\\CVL_ConvNet_data\\"
     saveFilename = save_path + name + ".png"   # name + 新しい拡張子(.png)
     print saveFilename
-    plt.imsave(saveFilename, np.logical_not(image_data), cmap=plt.cm.gray)
+    plt.imsave(saveFilename, image_data)
