@@ -49,6 +49,8 @@ num_x_start_point = len(x_start_point)
 print "num_y_start_point:", num_y_start_point
 print "num_x_start_point:", num_x_start_point
 
+# 訓練データを生成する
+# file数分のループを回す
 # 横座標を固定で縦座標を変化させて200*200の画像を取得する
 # 端の余った画像部分は使用しない
 for x in range(num_x_start_point-1):
@@ -61,3 +63,5 @@ for x in range(num_x_start_point-1):
         plt.imshow(cropped_image, cmap=plt.cm.gray)
         plt.show()
         plt.draw()
+
+# テストデータを生成する
