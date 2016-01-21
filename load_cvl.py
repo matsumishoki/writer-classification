@@ -65,8 +65,8 @@ for filename in filenames:
             y_point = y_start_point[y]
 #            print "train_x_point:", x_point
 #            print "train_y_point:", y_point
-            train_cropped_image = image[y_point:y_point+200,
-                                        x_point:x_point+200]
+            train_cropped_image = image[y_point:y_point+image_size,
+                                        x_point:x_point+image_size]
     #        plt.imshow(cropped_image, cmap=plt.cm.gray)
     #        plt.show()
     #        plt.draw()
@@ -79,8 +79,8 @@ for filename in filenames:
     x_select_point = np.random.permutation(x_select_points)
     y_select_point = np.random.permutation(y_select_points)
 
-    test_cropped_image = image[y_select_point[0]:y_select_point[0]+200,
-                               x_select_point[0]:x_select_point[0]+200]
+    test_cropped_image = image[y_select_point[0]:y_select_point[0]+image_size,
+                               x_select_point[0]:x_select_point[0]+image_size]
 #    print "test_x_point:", x_select_point[0]
 #    print "test_y_point:", y_select_point[0]
     y_points_history.append(y_select_point[0])
