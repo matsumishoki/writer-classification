@@ -46,6 +46,7 @@ plt.imshow(l)
 for filename in filenames:
     loadFileFullpath = os.path.join(dirpath, filename)
     print loadFileFullpath
+
     # グレースケール化した後に二値化する
     image = plt.imread(os.path.join(dirpath, filename))
     image_gray = rgb2gray(image)
@@ -59,6 +60,12 @@ for filename in filenames:
 
     # 画像データの名前と拡張子を分離する
     name, ext = os.path.splitext(filename)
+
+    #文章によって使うファイルと使わないファイルを分ける
+    text_type = name[5:6]
+    if(int(text_type) > 4):
+        continue
+
     save_path = "C:\\Users\\matsumi\\Desktop\\writer classification\\CVL_ConvNet_data\\"
     saveFilename = save_path + name + ".png"   # name + 新しい拡張子(.png)
     print saveFilename
