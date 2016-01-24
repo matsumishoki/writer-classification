@@ -43,7 +43,7 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
 
 
 # エポック毎に訓練データを作成する関数
-def make_epoch_data():
+def make_epoch_train_data():
     # 検索するデータセットのファイルのtop_pathを指定する
     top_path = os.path.join("CVL_ConvNet_data")
     temp_list = [data_filepath for data_filepath in os.walk(top_path)]
@@ -76,15 +76,51 @@ def make_epoch_data():
 
         image = image[y_p:y_p+image_size, x_p:x_p+image_size].copy()
         text_name = name[:4]
-        print text_name
+#        print text_name
         images.append(image)
         text_names.append(text_name)
 
     x = np.array(images).reshape(-1, 1, image_size, image_size)
     t = np.array(text_names)
-#    print len(x)
-#    print x.shape
-#    print type(x)
+    return x, t
+
+
+# エポック毎に訓練データを作成する関数
+def make_epoch_test_data():
+    # 検索するデータセットのファイルのtop_pathを指定する
+    top_path = os.path.join("CVL_test_data")
+    temp_list = [data_filepath for data_filepath in os.walk(top_path)]
+    tup = temp_list[0]
+    (dirpath, dirnames, filenames) = tup
+
+    image_size = 200
+    images = []
+    text_names = []
+    for filename in filenames:
+        image = plt.imread(os.path.join(dirpath, filename))
+
+        # 画像データの名前と拡張子を分離する
+        name, ext = os.path.splitext(filename)
+
+        heigh = image.shape[0]
+        width = image.shape[1]
+
+        # １人あたり3種類の画像から1枚ずつ切り出し画像を作成する
+        x_select_points = width - image_size
+        y_select_points = heigh - image_size
+        x_select_point = np.random.permutation(x_select_points)
+        y_select_point = np.random.permutation(y_select_points)
+        y_p = y_select_point[0]
+        x_p = x_select_point[0]
+
+        image = image[y_p:y_p+image_size, x_p:x_p+image_size].copy()
+        text_name = name[:4]
+#        print text_name
+        images.append(image)
+        text_names.append(text_name)
+
+    x = np.array(images).reshape(-1, 1, image_size, image_size)
+    t = np.array(text_names)
     return x, t
 
 if __name__ == '__main__':
@@ -102,11 +138,14 @@ if __name__ == '__main__':
 
     # 学習させるループ
     for a in range(2):
-        x_train_data, t_train_data = make_epoch_data()
-        print "x_train_data:", x_train_data
+        x_train_data, t_train_data = make_epoch_train_data()
+#        print "x_train_data:", x_train_data
         print "x_train_data.shape:", x_train_data.shape
-        print "t_train_data:", t_train_data
+#        print "t_train_data:", t_train_data
         print "t_train_data.shape:", t_train_data.shape
+        x_test_data, t_test_data = make_epoch_test_data()
+        print "x_test_data.shape:", x_test_data.shape
+        print "t_test_data.shape:", t_test_data.shape
 
         # mini batchi SGDで重みを更新させるループ
 
