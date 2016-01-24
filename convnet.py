@@ -83,7 +83,7 @@ def make_epoch_data():
         plt.draw()
         images.append(image)
 
-        x = np.array(images).reshape(-1, 1, 200, 200)
+        x = np.array(images).reshape(-1, 1, image_size, image_size)
         print len(x)
         print x.shape
 
