@@ -82,10 +82,11 @@ def make_epoch_train_data():
 
     x = np.array(images).reshape(-1, 1, image_size, image_size)
     t = np.array(text_names)
+    t = t.astype(np.int32)
     return x, t
 
 
-# エポック毎に訓練データを作成する関数
+# エポック毎にテストデータを作成する関数
 def make_epoch_test_data():
     # 検索するデータセットのファイルのtop_pathを指定する
     top_path = os.path.join("CVL_test_data")
@@ -143,6 +144,7 @@ if __name__ == '__main__':
         print "x_train_data.shape:", x_train_data.shape
 #        print "t_train_data:", t_train_data
         print "t_train_data.shape:", t_train_data.shape
+
         x_test_data, t_test_data = make_epoch_test_data()
         print "x_test_data.shape:", x_test_data.shape
         print "t_test_data.shape:", t_test_data.shape
