@@ -77,12 +77,15 @@ if __name__ == '__main__':
         y_select_points = image_y - cut_image_edge_size
         x_select_point = np.random.permutation(x_select_points)
         y_select_point = np.random.permutation(y_select_points)
+        y_p = y_select_point[0]
+        x_p = x_select_point[0]
 
-        test_cropped_image = image[y_select_point[0]:y_select_point[0]+image_size,
-                                   x_select_point[0]:x_select_point[0]+image_size]
-        plt.imshow(test_cropped_image, cmap=plt.cm.gray)
+        train_image = image[y_p:y_p+image_size,
+                            x_p:x_p+image_size]
+        plt.imshow(train_image, cmap=plt.cm.gray)
         plt.show()
         plt.draw()
+
     # 超パラメータの定義
     learning_rate = 0.000001  # learning_rate(学習率)を定義する
     max_iteration = 1000      # 学習させる回数
