@@ -62,10 +62,10 @@ def make_epoch_data():
         name, ext = os.path.splitext(filename)
 
         # 3種類の訓練画像だけを指定する
-        text_type = name[5:6]
-        if(int(text_type) > 3):
-            print "filename:", filename
-            continue
+#        text_type = name[5:6]
+#        if(int(text_type) > 3):
+#            print "filename:", filename
+#            continue
         heigh = image.shape[0]
         width = image.shape[1]
 
@@ -83,9 +83,18 @@ def make_epoch_data():
         plt.draw()
         images.append(image)
 
-        x = np.array(images).reshape(-1, 1, image_size, image_size)
-        print len(x)
-        print x.shape
+        text_type = name[5:6]
+        if(int(text_type) > 3):
+            print "filename:", filename
+            x = np.array(images).reshape(-1, 1, image_size, image_size)
+            print len(x)
+            print x.shape
+        else:
+            print "filename:", filename
+            t = np.array(images).reshape(-1, 1, image_size, image_size)
+            print len(t)
+            print t.shape
+
 
 if __name__ == '__main__':
     make_epoch_data()
