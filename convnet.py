@@ -51,10 +51,8 @@ def make_epoch_data():
     tup = temp_list[0]
     (dirpath, dirnames, filenames) = tup
 
-    cut_image_edge_size = 200
     image_size = 200
     images = []
-
     for filename in filenames:
         loadFileFullpath = os.path.join(dirpath, filename)
         print loadFileFullpath
@@ -68,12 +66,12 @@ def make_epoch_data():
         if(int(text_type) > 3):
             print "filename:", filename
             continue
-        image_y = image.shape[0]
-        image_x = image.shape[1]
+        heigh = image.shape[0]
+        width = image.shape[1]
 
         # １人あたり3種類の画像から1枚ずつ切り出し画像を作成する
-        x_select_points = image_x - cut_image_edge_size
-        y_select_points = image_y - cut_image_edge_size
+        x_select_points = width - image_size
+        y_select_points = heigh - image_size
         x_select_point = np.random.permutation(x_select_points)
         y_select_point = np.random.permutation(y_select_points)
         y_p = y_select_point[0]
@@ -84,9 +82,11 @@ def make_epoch_data():
         plt.show()
         plt.draw()
         images.append(image)
+
         x = np.array(images).reshape(-1, 1, 200, 200)
         print len(x)
         print x.shape
+
 if __name__ == '__main__':
     make_epoch_data()
     # 超パラメータの定義
