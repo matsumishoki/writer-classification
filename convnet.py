@@ -128,7 +128,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.000001  # learning_rate(学習率)を定義する
-    max_iteration = 1000      # 学習させる回数
+    max_iteration = 2      # 学習させる回数
     batch_size = 200       # ミニバッチ1つあたりのサンプル数
     dim_hidden_1 = 500         # 隠れ層の次元数を定義する
     dim_hidden_2 = 500
@@ -138,7 +138,8 @@ if __name__ == '__main__':
     l_2 = 0.0015
 
     # 学習させるループ
-    for a in range(2):
+    for epoch in range(max_iteration):
+        print "epoch:", epoch
         x_train_data, t_train_data = make_epoch_train_data()
 #        print "x_train_data:", x_train_data
         print "x_train_data.shape:", x_train_data.shape
