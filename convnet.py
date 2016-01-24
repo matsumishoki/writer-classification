@@ -76,14 +76,14 @@ def make_epoch_data():
 
         image = image[y_p:y_p+image_size, x_p:x_p+image_size]
         plt.imshow(image, cmap=plt.cm.gray)
-        plt.show()
-        plt.draw()
-        images.append(image)
+#        plt.show()
+#        plt.draw()
+#        images.append(image)
 
-        x = np.array(images).reshape(-1, 1, image_size, image_size)
-        print len(x)
-        print x.shape
-        return x
+    x = np.array(images).reshape(-1, 1, image_size, image_size)
+    print len(x)
+    print x.shape
+    return x
 
 if __name__ == '__main__':
 
