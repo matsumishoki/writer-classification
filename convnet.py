@@ -54,6 +54,8 @@ if __name__ == '__main__':
     num_dirpath = len(dirpath)
     num_dir = len(dirnames)
     num_file = len(filenames)
+    cut_image_edge_size = 200
+    image_size = 200
     for filename in filenames:
         loadFileFullpath = os.path.join(dirpath, filename)
         print loadFileFullpath
@@ -67,13 +69,20 @@ if __name__ == '__main__':
         if(int(text_type) > 3):
             print "filename:", filename
             continue
-        plt.imshow(image, cmap=plt.cm.gray)
-        plt.show()
-        plt.draw()
         image_y = image.shape[0]
         image_x = image.shape[1]
-            # １人あたり3種類の画像から1枚ずつ切り出し画像を作成する
 
+        # １人あたり3種類の画像から1枚ずつ切り出し画像を作成する
+        x_select_points = image_x - cut_image_edge_size
+        y_select_points = image_y - cut_image_edge_size
+        x_select_point = np.random.permutation(x_select_points)
+        y_select_point = np.random.permutation(y_select_points)
+
+        test_cropped_image = image[y_select_point[0]:y_select_point[0]+image_size,
+                                   x_select_point[0]:x_select_point[0]+image_size]
+        plt.imshow(test_cropped_image, cmap=plt.cm.gray)
+        plt.show()
+        plt.draw()
     # 超パラメータの定義
     learning_rate = 0.000001  # learning_rate(学習率)を定義する
     max_iteration = 1000      # 学習させる回数
