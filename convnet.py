@@ -47,25 +47,22 @@ def make_epoch_data():
     # 検索するデータセットのファイルのtop_pathを指定する
     top_path = os.path.join("CVL_ConvNet_data")
     temp_list = [data_filepath for data_filepath in os.walk(top_path)]
-
     tup = temp_list[0]
     (dirpath, dirnames, filenames) = tup
 
     image_size = 200
     images = []
     for filename in filenames:
-        loadFileFullpath = os.path.join(dirpath, filename)
-        print loadFileFullpath
         image = plt.imread(os.path.join(dirpath, filename))
 
         # 画像データの名前と拡張子を分離する
         name, ext = os.path.splitext(filename)
 
         # 3種類の訓練画像だけを指定する
-#        text_type = name[5:6]
-#        if(int(text_type) > 3):
-#            print "filename:", filename
-#            continue
+        text_type = name[5:6]
+        if(int(text_type) > 3):
+            print "filename:", filename
+            continue
         heigh = image.shape[0]
         width = image.shape[1]
 
@@ -83,21 +80,13 @@ def make_epoch_data():
         plt.draw()
         images.append(image)
 
-        text_type = name[5:6]
-        if(int(text_type) > 3):
-            print "filename:", filename
-            x = np.array(images).reshape(-1, 1, image_size, image_size)
-            print len(x)
-            print x.shape
-        else:
-            print "filename:", filename
-            t = np.array(images).reshape(-1, 1, image_size, image_size)
-            print len(t)
-            print t.shape
-
+        x = np.array(images).reshape(-1, 1, image_size, image_size)
+        print len(x)
+        print x.shape
+        return x
 
 if __name__ == '__main__':
-    make_epoch_data()
+
     # 超パラメータの定義
     learning_rate = 0.000001  # learning_rate(学習率)を定義する
     max_iteration = 1000      # 学習させる回数
@@ -110,6 +99,8 @@ if __name__ == '__main__':
     l_2 = 0.0015
 
     # 学習させるループ
+
+    x_train_data = make_epoch_data()
 
         # mini batchi SGDで重みを更新させるループ
 
