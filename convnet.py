@@ -53,7 +53,17 @@ def make_epoch_train_data():
     image_size = 200
     images = []
     text_names = []
+    file_numbers = []
+    image_number = 0
+    same_author = 3
     for filename in filenames:
+
+        if (image_number == 310):
+            image_number = 0
+        image_number = image_number+1
+        for e in range(same_author):
+            file_numbers.append(image_number)
+
         image = plt.imread(os.path.join(dirpath, filename))
 
         # 画像データの名前と拡張子を分離する
@@ -81,8 +91,9 @@ def make_epoch_train_data():
         text_names.append(text_name)
 
     x = np.array(images).reshape(-1, 1, image_size, image_size)
-    t = np.array(text_names)
-    t = t.astype(np.int32)
+#    t = np.array(text_names)
+#    t = t.astype(np.int32)
+    t = np.array(file_numbers)
     return x, t
 
 
@@ -151,6 +162,7 @@ if __name__ == '__main__':
         print "t_test_data.shape:", t_test_data.shape
 
         # mini batchi SGDで重みを更新させるループ
+        time_start = time.time()
 
             # 逆伝播
 
