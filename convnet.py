@@ -52,6 +52,7 @@ def make_epoch_data():
 
     image_size = 200
     images = []
+    text_names = []
     for filename in filenames:
         image = plt.imread(os.path.join(dirpath, filename))
 
@@ -73,16 +74,18 @@ def make_epoch_data():
         y_p = y_select_point[0]
         x_p = x_select_point[0]
 
-        image = image[y_p:y_p+image_size, x_p:x_p+image_size]
+        image = image[y_p:y_p+image_size, x_p:x_p+image_size].copy()
         text_name = name[:4]
         print text_name
         images.append(image)
+        text_names.append(text_name)
 
     x = np.array(images).reshape(-1, 1, image_size, image_size)
-    print len(x)
-    print x.shape
-    print type(x)
-    return x
+    t = np.array(text_names)
+#    print len(x)
+#    print x.shape
+#    print type(x)
+    return x, t
 
 if __name__ == '__main__':
 
@@ -99,7 +102,11 @@ if __name__ == '__main__':
 
     # 学習させるループ
     for a in range(2):
-        x_train_data = make_epoch_data()
+        x_train_data, t_train_data = make_epoch_data()
+        print "x_train_data:", x_train_data
+        print "x_train_data.shape:", x_train_data.shape
+        print "t_train_data:", t_train_data
+        print "t_train_data.shape:", t_train_data.shape
 
         # mini batchi SGDで重みを更新させるループ
 
