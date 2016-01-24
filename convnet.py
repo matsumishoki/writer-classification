@@ -79,6 +79,8 @@ def make_epoch_data():
 #        plt.show()
 #        plt.draw()
 #        images.append(image)
+        text_name = name[:4]
+        print text_name
 
     x = np.array(images).reshape(-1, 1, image_size, image_size)
     print len(x)
