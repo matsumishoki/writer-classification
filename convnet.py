@@ -15,17 +15,31 @@ from chainer import Variable, FunctionSet
 from chainer.optimizers import SGD, Adam
 
 
-def error_and_accuracy(w_1, w_2, b_1, b_2, x_data, t_data):
-    x = Variable(x_data)
+def loss_and_accuracy(model, x_data, t_data, train=False):
+    x = Variable(x_data.reshape(-1, 1, 28, 28))
     t = Variable(t_data)
 
-    a_z = F.linear(x, w_1, b_1)
-    z = F.tanh(a_z)
-    a_y = F.linear(z, w_2, b_2)
+    # 順伝播
+    h = model.conv_11(x)
+    h = model.conv_12(h)
+#    h = model.conv_13(h)
+    h = F.max_pooling_2d(h, 2)
+    h = F.relu(h)
+    h = model.conv_2(h)
+    h = F.max_pooling_2d(h, 2)
+    h = F.relu(h)
+    h = model.conv_3(h)
+    h = F.relu(h)
+#    h = F.dropout(h, ratio=0.9, train=train)
+    h = model.linear_1(h)
+    h = F.relu(h)
+#    h = F.dropout(h, ratio=0.9, train=train)
+    a_y = model.linear_2(h)
 
-    error = F.softmax_cross_entropy(a_y, t)
+    loss = F.softmax_cross_entropy(a_y, t)
     accuracy = F.accuracy(a_y, t)
-    return error.data, accuracy.data * 100
+
+    return loss, cuda.to_cpu(accuracy.data) * 100
 
 if __name__ == '__main__':
     # 検索するデータセットのファイルのtop_pathを指定する
@@ -48,7 +62,7 @@ if __name__ == '__main__':
         # 画像データの名前と拡張子を分離する
         name, ext = os.path.splitext(filename)
 
-        # テスト画像だけを指定し，ファイルに保存する
+        # 3種類の訓練画像だけを指定する
         text_type = name[5:6]
         if(int(text_type) > 3):
             print "filename:", filename
@@ -56,3 +70,31 @@ if __name__ == '__main__':
         plt.imshow(image, cmap=plt.cm.gray)
         plt.show()
         plt.draw()
+        image_y = image.shape[0]
+        image_x = image.shape[1]
+            # １人あたり3種類の画像から1枚ずつ切り出し画像を作成する
+
+    # 超パラメータの定義
+    learning_rate = 0.000001  # learning_rate(学習率)を定義する
+    max_iteration = 1000      # 学習させる回数
+    batch_size = 200       # ミニバッチ1つあたりのサンプル数
+    dim_hidden_1 = 500         # 隠れ層の次元数を定義する
+    dim_hidden_2 = 500
+    wscale_1 = 1.0
+    wscale_2 = 1.0
+    wscale_3 = 1.0
+    l_2 = 0.0015
+
+    # 学習させるループ
+
+        # mini batchi SGDで重みを更新させるループ
+
+            # 逆伝播
+
+        # 誤差
+
+        # 学習曲線をプロットする
+
+    # 学習済みのモデルをテストセットで誤差と正解率を求める
+
+    # wの可視化
