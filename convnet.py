@@ -61,7 +61,6 @@ def make_epoch_data():
         # 3種類の訓練画像だけを指定する
         text_type = name[5:6]
         if(int(text_type) > 3):
-            print "filename:", filename
             continue
         heigh = image.shape[0]
         width = image.shape[1]
@@ -75,16 +74,14 @@ def make_epoch_data():
         x_p = x_select_point[0]
 
         image = image[y_p:y_p+image_size, x_p:x_p+image_size]
-        plt.imshow(image, cmap=plt.cm.gray)
-#        plt.show()
-#        plt.draw()
-#        images.append(image)
         text_name = name[:4]
         print text_name
+        images.append(image)
 
     x = np.array(images).reshape(-1, 1, image_size, image_size)
     print len(x)
     print x.shape
+    print type(x)
     return x
 
 if __name__ == '__main__':
@@ -101,8 +98,8 @@ if __name__ == '__main__':
     l_2 = 0.0015
 
     # 学習させるループ
-
-    x_train_data = make_epoch_data()
+    for a in range(2):
+        x_train_data = make_epoch_data()
 
         # mini batchi SGDで重みを更新させるループ
 
