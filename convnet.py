@@ -166,8 +166,23 @@ if __name__ == '__main__':
     train_accuracy_best = 0
     train_loss_best = 10
 
+    x_train, t_train = make_epoch_train_data()
+    num_train = len(x_train)
+    classes = np.unique(t_train)  # 定義されたクラスラベル
+    num_classes = len(classes)  # クラス数
+    dim_features = x_train.shape[-1]  # xの次元
+
+    model = FunctionSet(conv_1=F.Convolution2D(1, 50, 25),
+                        conv_2=F.Convolution2D(50, 50, 25),
+                        conv_3=F.Convolution2D(50, 100, 25),
+                        conv_4=F.Convolution2D(100, 200, 4),
+                        linear_1=F.Linear(200, 400, wscale=wscale_1),
+                        linear_2=F.Linear(400, num_classes,
+                                          wscale=wscale_2)).to_gpu()
+
     loss_history = []
     train_accuracy_history = []
+    num_train_batches = num_train / batch_size  # ミニバッチの個数
     # 学習させるループ
     for epoch in range(max_iteration):
         print "epoch:", epoch
@@ -188,23 +203,8 @@ if __name__ == '__main__':
         print "x_test.shape:", x_test.shape
         print "t_test.shape:", t_test.shape
 
-        num_train = len(x_train)
-        num_test = len(x_test)
-        classes = np.unique(t_train)  # 定義されたクラスラベル
-        num_classes = len(classes)  # クラス数
-        dim_features = x_train.shape[-1]  # xの次元
-
-        model = FunctionSet(conv_1=F.Convolution2D(1, 50, 25),
-                            conv_2=F.Convolution2D(50, 50, 25),
-                            conv_3=F.Convolution2D(50, 100, 25),
-                            conv_4=F.Convolution2D(100, 200, 4),
-                            linear_1=F.Linear(200, 400, wscale=wscale_1),
-                            linear_2=F.Linear(400, num_classes,
-                                              wscale=wscale_2)).to_gpu()
-
         optimizer = chainer.optimizers.Adam(learning_rate)
         optimizer.setup(model)
-        num_train_batches = num_train / batch_size  # ミニバッチの個数
 
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
