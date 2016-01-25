@@ -249,6 +249,22 @@ if __name__ == '__main__':
         train_accuracy_history.append(train_accuracy)
 
         # 学習曲線をプロットする
+        plt.subplot(1, 2, 1)
+        plt.title("Loss")
+        plt.plot(loss_history)
+        plt.legend(["train"], loc="best")
+        plt.ylim([0.0, 0.4])
+        plt.grid()
+
+        plt.subplot(1, 2, 2)
+        plt.title("Accuracy")
+        plt.plot(train_accuracy_history)
+        plt.legend(["train"], loc="best")
+        plt.ylim([0, 100])
+        plt.grid()
+        plt.tight_layout()
+        plt.show()
+        plt.draw()
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
 
