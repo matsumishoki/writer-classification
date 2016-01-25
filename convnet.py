@@ -160,9 +160,20 @@ if __name__ == '__main__':
     wscale_3 = 1.0
     l_2 = 0.0015
 
+    loss_history = []
+    train_accuracy_history = []
     # 学習させるループ
     for epoch in range(max_iteration):
         print "epoch:", epoch
+        w_1_grad_norms = []
+        w_2_grad_norms = []
+        w_3_grad_norms = []
+        b_1_grad_norms = []
+        b_2_grad_norms = []
+        b_3_grad_norms = []
+        train_losses = []
+        train_accuracies = []
+
         x_train, t_train = make_epoch_train_data()
         print "x_train.shape:", x_train.shape
         print "t_train:", t_train.shape
@@ -184,7 +195,7 @@ if __name__ == '__main__':
                             linear_1=F.Linear(200, 400, wscale=wscale_1),
                             linear_2=F.Linear(400, num_classes,
                                               wscale=wscale_2)).to_gpu()
-
+        num_train_batches = num_train / batch_size  # ミニバッチの個数
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
 
