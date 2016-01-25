@@ -22,20 +22,28 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     t = Variable(t_data)
 
     # 順伝播
-    # C25,p2
+    # 1.C5,p2
     h = model.conv_1(x)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
-    # C25,p2
+    # 2.C3,p2
     h = model.conv_2(h)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
-    # C25,p2
+    # 3.C5,p2
     h = model.conv_3(h)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
-    # C4
+    # 4.C5,p2
     h = model.conv_4(h)
+    h = F.max_pooling_2d(h, 2)
+    h = F.relu(h)
+    # 5.C4,p2
+    h = model.conv_5(h)
+    h = F.max_pooling_2d(h, 2)
+    h = F.relu(h)
+    # 6.C3
+    h = model.conv_6(h)
     h = model.linear_1(h)
     h = F.relu(h)
     a_y = model.linear_2(h)
@@ -172,10 +180,12 @@ if __name__ == '__main__':
     num_classes = len(classes)  # クラス数
     dim_features = x_train.shape[-1]  # xの次元
 
-    model = FunctionSet(conv_1=F.Convolution2D(1, 50, 25),
-                        conv_2=F.Convolution2D(50, 50, 25),
-                        conv_3=F.Convolution2D(50, 100, 25),
-                        conv_4=F.Convolution2D(100, 200, 4),
+    model = FunctionSet(conv_1=F.Convolution2D(1, 50, 5),
+                        conv_2=F.Convolution2D(50, 50, 3),
+                        conv_3=F.Convolution2D(50, 100, 5),
+                        conv_4=F.Convolution2D(100, 200, 5),
+                        conv_5=F.Convolution2D(200, 100, 4),
+                        conv_6=F.Convolution2D(100, 200, 3),
                         linear_1=F.Linear(200, 400, wscale=wscale_1),
                         linear_2=F.Linear(400, num_classes,
                                           wscale=wscale_2)).to_gpu()
@@ -210,7 +220,7 @@ if __name__ == '__main__':
         time_start = time.time()
         perm_train = np.random.permutation(num_train)
 
-        for batch_indexes in np.array_split(perm_train[:100],
+        for batch_indexes in np.array_split(perm_train[:200],
                                             num_train_batches):
             x_batch = cuda.to_gpu(x_train[batch_indexes])
             t_batch = cuda.to_gpu(t_train[batch_indexes])
