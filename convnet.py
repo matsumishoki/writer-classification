@@ -154,8 +154,8 @@ def make_epoch_test_data():
 if __name__ == '__main__':
 
     # 超パラメータの定義
-    learning_rate = 0.000001  # learning_rate(学習率)を定義する
-    max_iteration = 2      # 学習させる回数
+    learning_rate = 0.01  # learning_rate(学習率)を定義する
+    max_iteration = 10      # 学習させる回数
     batch_size = 200       # ミニバッチ1つあたりのサンプル数
     dim_hidden_1 = 500         # 隠れ層の次元数を定義する
     dim_hidden_2 = 500
@@ -281,8 +281,8 @@ if __name__ == '__main__':
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
     test_error, test_accuracy = loss_and_accuracy(model_best,
-                                                  cuda.to_gpu(x_test[:100]),
-                                                  cuda.to_gpu(t_test[:100]))
+                                                  cuda.to_gpu(x_test),
+                                                  cuda.to_gpu(t_test))
 
     print "[test]  Accuracy:", test_accuracy
     print "[train] Loss:", train_loss.data
@@ -298,6 +298,5 @@ if __name__ == '__main__':
     print "l_2:", l_2
 
     print
-
 
     # wの可視化
