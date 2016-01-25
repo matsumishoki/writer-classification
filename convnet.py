@@ -245,6 +245,8 @@ if __name__ == '__main__':
                                                            t_batch_train)
             train_losses.append(train_loss.data)
             train_accuracies.append(train_accuracy)
+        average_train_loss = np.array(train_losses).mean()
+        average_train_accuracy = np.array(train_accuracies).mean()
         print "[train] Loss:", train_loss.data
         print "[train] Accuracy:", train_accuracy
         loss_history.append(train_loss.data.get())
