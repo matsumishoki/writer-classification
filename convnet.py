@@ -231,8 +231,22 @@ if __name__ == '__main__':
         time_elapsed = time_finish - time_start
         print "time_elapsed:", time_elapsed
 
-
         # 誤差
+        # 訓練データセットの交差エントロピー誤差と正解率を表示する
+        for batch_indexes in np.array_split(perm_train[:100],
+                                            num_train_batches):
+            x_batch_train = cuda.to_gpu(x_train[batch_indexes])
+            t_batch_train = cuda.to_gpu(t_train[batch_indexes])
+
+            train_loss, train_accuracy = loss_and_accuracy(model,
+                                                           x_batch_train,
+                                                           t_batch_train)
+            train_losses.append(train_loss.data)
+            train_accuracies.append(train_accuracy)
+        print "[train] Loss:", train_loss.data
+        print "[train] Accuracy:", train_accuracy
+        loss_history.append(train_loss.data.get())
+        train_accuracy_history.append(train_accuracy)
 
         # 学習曲線をプロットする
 
