@@ -42,6 +42,26 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     return loss, cuda.to_cpu(accuracy.data) * 100
 
 
+def renumber(array):
+    """
+    input:
+        a sorted array-like, e.g. [2, 2, 5, 5, 5, 49, 49, 207, 207, 207]
+    output:
+        np.ndarray: renumbered array, e.g. [0, 0, 1, 1, 1, 2, 2, 3, 3, 3]
+    """
+    is_ndarray = isinstance(array, np.ndarray)
+    if is_ndarray:
+        shape = array.shape
+        dtype = array.dtype
+    counts = np.bincount(np.asarray(array).ravel())
+    renumbered = [[i] * k for i, k in enumerate(counts[counts.nonzero()])]
+    renumbered = np.concatenate(renumbered)
+    if is_ndarray:
+        return renumbered.astype(dtype).reshape(shape)
+    else:
+        return renumbered
+
+
 # エポック毎に訓練データを作成する関数
 def make_epoch_train_data():
     # 検索するデータセットのファイルのtop_pathを指定する
@@ -52,18 +72,8 @@ def make_epoch_train_data():
 
     image_size = 200
     images = []
-    text_names = []
     file_numbers = []
-    image_number = 0
-    same_author = 3
     for filename in filenames:
-
-        if (image_number == 310):
-            image_number = 0
-        image_number = image_number+1
-        for e in range(same_author):
-            file_numbers.append(image_number)
-
         image = plt.imread(os.path.join(dirpath, filename))
 
         # 画像データの名前と拡張子を分離する
@@ -86,14 +96,13 @@ def make_epoch_train_data():
 
         image = image[y_p:y_p+image_size, x_p:x_p+image_size].copy()
         text_name = name[:4]
-#        print text_name
         images.append(image)
-        text_names.append(text_name)
+        file_numbers.append(text_name)
 
     x = np.array(images).reshape(-1, 1, image_size, image_size)
-#    t = np.array(text_names)
-#    t = t.astype(np.int32)
     t = np.array(file_numbers)
+    t = t.astype(np.int32)
+    t = renumber(t)
     return x, t
 
 
