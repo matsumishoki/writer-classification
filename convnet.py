@@ -116,13 +116,14 @@ def make_epoch_test_data():
 
     image_size = 200
     images = []
-    text_names = []
+    file_numbers = []
     for filename in filenames:
         image = plt.imread(os.path.join(dirpath, filename))
 
         # 画像データの名前と拡張子を分離する
         name, ext = os.path.splitext(filename)
 
+        # 3種類の訓練画像だけを指定する
         heigh = image.shape[0]
         width = image.shape[1]
 
@@ -136,13 +137,15 @@ def make_epoch_test_data():
 
         image = image[y_p:y_p+image_size, x_p:x_p+image_size].copy()
         text_name = name[:4]
-#        print text_name
         images.append(image)
-        text_names.append(text_name)
+        file_numbers.append(text_name)
 
     x = np.array(images).reshape(-1, 1, image_size, image_size)
-    t = np.array(text_names)
+    t = np.array(file_numbers)
+    t = t.astype(np.int32)
+    t = renumber(t)
     return x, t
+
 
 if __name__ == '__main__':
 
