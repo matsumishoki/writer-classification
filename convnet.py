@@ -163,16 +163,19 @@ if __name__ == '__main__':
     # 学習させるループ
     for epoch in range(max_iteration):
         print "epoch:", epoch
-        x_train_data, t_train_data = make_epoch_train_data()
-#        print "x_train_data:", x_train_data
-        print "x_train_data.shape:", x_train_data.shape
-#        print "t_train_data:", t_train_data
-        print "t_train_data.shape:", t_train_data.shape
+        x_train, t_train = make_epoch_train_data()
+        print "x_train.shape:", x_train.shape
+        print "t_train:", t_train.shape
 
-        x_test_data, t_test_data = make_epoch_test_data()
-        print "x_test_data.shape:", x_test_data.shape
-        print "t_test_data.shape:", t_test_data.shape
+        x_test, t_test = make_epoch_test_data()
+        print "x_test.shape:", x_test.shape
+        print "t_test.shape:", t_test.shape
 
+        num_train = len(x_train)
+        num_test = len(x_test)
+        classes = np.unique(t_train)  # 定義されたクラスラベル
+        num_classes = len(classes)  # クラス数
+        dim_features = x_train.shape[-1]  # xの次元
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
 
