@@ -13,6 +13,7 @@ import copy
 from chainer import cuda
 import chainer.functions as F
 from chainer import Variable, FunctionSet
+import chainer.optimizers
 from chainer.optimizers import SGD, Adam
 
 
@@ -198,13 +199,17 @@ if __name__ == '__main__':
                             linear_1=F.Linear(200, 400, wscale=wscale_1),
                             linear_2=F.Linear(400, num_classes,
                                               wscale=wscale_2)).to_gpu()
+
+        optimizer = chainer.optimizers.Adam(learning_rate)
+        optimizer.setup(model)
         num_train_batches = num_train / batch_size  # ミニバッチの個数
 
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
         perm_train = np.random.permutation(num_train)
 
-        for batch_indexes in np.array_split(perm_train[:100], num_train_batches):
+        for batch_indexes in np.array_split(perm_train[:100],
+                                            num_train_batches):
             x_batch = cuda.to_gpu(x_train[batch_indexes])
             t_batch = cuda.to_gpu(t_train[batch_indexes])
 
@@ -213,6 +218,19 @@ if __name__ == '__main__':
                                                            train=True)
 
             # 逆伝播
+            optimizer.zero_grads()
+            batch_loss.backward()
+            optimizer.update()
+
+            w_1_grad_norm = np.linalg.norm(model.linear_1.W.grad.get())
+            w_1_grad_norms.append(w_1_grad_norm)
+            w_2_grad_norm = np.linalg.norm(model.linear_2.W.grad.get())
+            w_2_grad_norms.append(w_2_grad_norm)
+
+        time_finish = time.time()
+        time_elapsed = time_finish - time_start
+        print "time_elapsed:", time_elapsed
+
 
         # 誤差
 
