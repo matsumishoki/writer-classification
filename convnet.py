@@ -74,7 +74,6 @@ def make_epoch_train_data():
     images = []
     file_numbers = []
     for filename in filenames:
-        image = plt.imread(os.path.join(dirpath, filename))
 
         # 画像データの名前と拡張子を分離する
         name, ext = os.path.splitext(filename)
@@ -83,6 +82,7 @@ def make_epoch_train_data():
         text_type = name[5:6]
         if(int(text_type) > 3):
             continue
+        image = plt.imread(os.path.join(dirpath, filename))
         heigh = image.shape[0]
         width = image.shape[1]
 
