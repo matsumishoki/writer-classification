@@ -176,6 +176,15 @@ if __name__ == '__main__':
         classes = np.unique(t_train)  # 定義されたクラスラベル
         num_classes = len(classes)  # クラス数
         dim_features = x_train.shape[-1]  # xの次元
+
+        model = FunctionSet(conv_1=F.Convolution2D(1, 50, 25),
+                            conv_2=F.Convolution2D(50, 50, 25),
+                            conv_3=F.Convolution2D(50, 100, 25),
+                            conv_4=F.Convolution2D(100, 200, 4),
+                            linear_1=F.Linear(200, 400, wscale=wscale_1),
+                            linear_2=F.Linear(400, num_classes,
+                                              wscale=wscale_2)).to_gpu()
+
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
 
