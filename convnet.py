@@ -10,30 +10,33 @@ from sklearn.cross_validation import train_test_split
 import matplotlib.pyplot as plt
 import time
 import copy
+from chainer import cuda
 import chainer.functions as F
 from chainer import Variable, FunctionSet
 from chainer.optimizers import SGD, Adam
 
 
 def loss_and_accuracy(model, x_data, t_data, train=False):
-    x = Variable(x_data.reshape(-1, 1, 28, 28))
+    x = Variable(x_data.reshape(-1, 1, 200, 200))
     t = Variable(t_data)
 
     # 順伝播
-    h = model.conv_11(x)
-    h = model.conv_12(h)
-#    h = model.conv_13(h)
+    # C25,p2
+    h = model.conv_1(x)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
+    # C25,p2
     h = model.conv_2(h)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
+    # C25,p2
     h = model.conv_3(h)
+    h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
-#    h = F.dropout(h, ratio=0.9, train=train)
+    # C4
+    h = model.conv_4(h)
     h = model.linear_1(h)
     h = F.relu(h)
-#    h = F.dropout(h, ratio=0.9, train=train)
     a_y = model.linear_2(h)
 
     loss = F.softmax_cross_entropy(a_y, t)
@@ -196,8 +199,18 @@ if __name__ == '__main__':
                             linear_2=F.Linear(400, num_classes,
                                               wscale=wscale_2)).to_gpu()
         num_train_batches = num_train / batch_size  # ミニバッチの個数
+
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
+        perm_train = np.random.permutation(num_train)
+
+        for batch_indexes in np.array_split(perm_train[:100], num_train_batches):
+            x_batch = cuda.to_gpu(x_train[batch_indexes])
+            t_batch = cuda.to_gpu(t_train[batch_indexes])
+
+            batch_loss, batch_accuracy = loss_and_accuracy(model,
+                                                           x_batch, t_batch,
+                                                           train=True)
 
             # 逆伝播
 
