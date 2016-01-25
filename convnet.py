@@ -10,10 +10,10 @@ from sklearn.cross_validation import train_test_split
 import matplotlib.pyplot as plt
 import time
 import copy
-from chainer import cuda
 import chainer.functions as F
 from chainer import Variable, FunctionSet
 import chainer.optimizers
+from chainer import cuda
 from chainer.optimizers import SGD, Adam
 
 
@@ -243,14 +243,14 @@ if __name__ == '__main__':
             train_loss, train_accuracy = loss_and_accuracy(model,
                                                            x_batch_train,
                                                            t_batch_train)
-            train_losses.append(train_loss.data)
+            train_losses.append(train_loss.data.get())
             train_accuracies.append(train_accuracy)
         average_train_loss = np.array(train_losses).mean()
         average_train_accuracy = np.array(train_accuracies).mean()
-        print "[train] Loss:", train_loss.data
-        print "[train] Accuracy:", train_accuracy
-        loss_history.append(train_loss.data.get())
-        train_accuracy_history.append(train_accuracy)
+        print "[train] Loss:", average_train_loss
+        print "[train] Accuracy:", average_train_accuracy
+        loss_history.append(average_train_loss)
+        train_accuracy_history.append(average_train_accuracy)
 
         # 学習曲線をプロットする
         plt.subplot(1, 2, 1)
