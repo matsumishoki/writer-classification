@@ -280,5 +280,24 @@ if __name__ == '__main__':
             print
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
+    test_error, test_accuracy = loss_and_accuracy(model_best,
+                                                  cuda.to_gpu(x_test[:100]),
+                                                  cuda.to_gpu(t_test[:100]))
+
+    print "[test]  Accuracy:", test_accuracy
+    print "[train] Loss:", train_loss.data
+    print "Best epoch :", epoch_best
+    print "Finish epoch:", epoch
+    print "Batch size:", batch_size
+    print "Learning rate:", learning_rate
+    print "dim_hidden_1:", dim_hidden_1
+    print "dim_hidden_2:", dim_hidden_2
+    print "wscale_1:", wscale_1
+    print "wscale_2:", wscale_2
+    print "wscale_3:", wscale_3
+    print "l_2:", l_2
+
+    print
+
 
     # wの可視化
