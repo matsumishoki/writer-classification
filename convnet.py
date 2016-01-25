@@ -163,6 +163,8 @@ if __name__ == '__main__':
     wscale_2 = 1.0
     wscale_3 = 1.0
     l_2 = 0.0015
+    train_accuracy_best = 0
+    train_loss_best = 10
 
     loss_history = []
     train_accuracy_history = []
@@ -265,6 +267,17 @@ if __name__ == '__main__':
         plt.tight_layout()
         plt.show()
         plt.draw()
+
+        # 訓練データの誤差が良ければwの最善値を保存する
+        if train_loss.data <= train_loss_best:
+            model_best = copy.deepcopy(model)
+            epoch_best = epoch
+            train_loss_best = train_loss.data
+            train_accuracy_best = train_accuracy
+            print "epoch_best:", epoch_best
+            print "train_loss_best:", train_loss_best
+            print "train_accuracy_best:", train_accuracy_best
+            print
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
 
