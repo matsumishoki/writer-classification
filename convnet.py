@@ -165,7 +165,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.01  # learning_rate(学習率)を定義する
-    max_iteration = 3      # 学習させる回数
+    max_iteration = 20      # 学習させる回数
     batch_size = 50       # ミニバッチ1つあたりのサンプル数
     dim_hidden_1 = 500         # 隠れ層の次元数を定義する
     dim_hidden_2 = 500
@@ -203,6 +203,7 @@ if __name__ == '__main__':
 
     loss_history = []
     train_accuracy_history = []
+    test_accuracy_history = []
     # 学習させるループ
     for epoch in range(max_iteration):
         print "epoch:", epoch
@@ -214,6 +215,8 @@ if __name__ == '__main__':
         b_3_grad_norms = []
         train_losses = []
         train_accuracies = []
+        test_losses = []
+        test_accuracies = []
 
         x_train, t_train = make_epoch_train_data()
         print "x_train.shape:", x_train.shape
@@ -304,14 +307,18 @@ if __name__ == '__main__':
     # 学習済みのモデルをテストセットで誤差と正解率を求める
     perm_test = np.random.permutation(num_test)
     sort_test = np.sort(perm_test)
-    for batch_indexes in np.array_split(sort_test[:100],
+    for batch_indexes in np.array_split(sort_test[:30],
                                         num_test_batches):
         x_batch_test = cuda.to_gpu(x_test[batch_indexes])
         t_batch_test = cuda.to_gpu(t_test[batch_indexes])
 
-        test_error, test_accuracy = loss_and_accuracy(model_best,
+        test_loss, test_accuracy = loss_and_accuracy(model_best,
                                                       x_batch_test,
                                                       t_batch_test)
+        test_losses.append(test_loss.data.get())
+        test_accuracies.append(test_accuracy)
+    average_test_loss = np.array(test_losses).mean()
+    average_test_accuracy = np.array(test_accuracies).mean()
 
     print "[test]  Accuracy:", test_accuracy
     print "[train] Loss:", train_loss.data
