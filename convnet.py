@@ -166,7 +166,7 @@ if __name__ == '__main__':
     # 超パラメータの定義
     learning_rate = 0.01  # learning_rate(学習率)を定義する
     max_iteration = 10      # 学習させる回数
-    batch_size = 200       # ミニバッチ1つあたりのサンプル数
+    batch_size = 50       # ミニバッチ1つあたりのサンプル数
     dim_hidden_1 = 500         # 隠れ層の次元数を定義する
     dim_hidden_2 = 500
     wscale_1 = 1.0
@@ -221,8 +221,8 @@ if __name__ == '__main__':
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
         perm_train = np.random.permutation(num_train)
-
-        for batch_indexes in np.array_split(perm_train[:200],
+        sort_train = np.sort(perm_train)
+        for batch_indexes in np.array_split(sort_train[:100],
                                             num_train_batches):
             x_batch = cuda.to_gpu(x_train[batch_indexes])
             t_batch = cuda.to_gpu(t_train[batch_indexes])
@@ -247,7 +247,7 @@ if __name__ == '__main__':
 
         # 誤差
         # 訓練データセットの交差エントロピー誤差と正解率を表示する
-        for batch_indexes in np.array_split(perm_train[:100],
+        for batch_indexes in np.array_split(sort_train[:100],
                                             num_train_batches):
             x_batch_train = cuda.to_gpu(x_train[batch_indexes])
             t_batch_train = cuda.to_gpu(t_train[batch_indexes])
