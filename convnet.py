@@ -165,7 +165,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.01  # learning_rate(学習率)を定義する
-    max_iteration = 10      # 学習させる回数
+    max_iteration = 3      # 学習させる回数
     batch_size = 50       # ミニバッチ1つあたりのサンプル数
     dim_hidden_1 = 500         # 隠れ層の次元数を定義する
     dim_hidden_2 = 500
@@ -176,12 +176,21 @@ if __name__ == '__main__':
     train_accuracy_best = 0
     train_loss_best = 10
 
+    # 訓練データに必要な定義をする
     x_train, t_train = make_epoch_train_data()
     num_train = len(x_train)
     classes = np.unique(t_train)  # 定義されたクラスラベル
     num_classes = len(classes)  # クラス数
     dim_features = x_train.shape[-1]  # xの次元
+    num_train_batches = num_train / batch_size  # ミニバッチの個数
 
+    # テストデータに必要な定義をする
+    x_test, t_test = make_epoch_test_data()
+    num_test = len(x_test)
+    dim_features = x_train.shape[-1]  # xの次元
+    num_test_batches = num_test / batch_size  # ミニバッチの個数
+
+    # モデルの定義をする
     model = FunctionSet(conv_1=F.Convolution2D(1, 50, 3),
                         conv_2=F.Convolution2D(50, 50, 4),
                         conv_3=F.Convolution2D(50, 100, 5),
@@ -194,7 +203,6 @@ if __name__ == '__main__':
 
     loss_history = []
     train_accuracy_history = []
-    num_train_batches = num_train / batch_size  # ミニバッチの個数
     # 学習させるループ
     for epoch in range(max_iteration):
         print "epoch:", epoch
@@ -294,9 +302,16 @@ if __name__ == '__main__':
             print
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
-    test_error, test_accuracy = loss_and_accuracy(model_best,
-                                                  cuda.to_gpu(x_test),
-                                                  cuda.to_gpu(t_test))
+    perm_test = np.random.permutation(num_test)
+    sort_test = np.sort(perm_test)
+    for batch_indexes in np.array_split(sort_test[:100],
+                                        num_test_batches):
+        x_batch_test = cuda.to_gpu(x_test[batch_indexes])
+        t_batch_test = cuda.to_gpu(t_test[batch_indexes])
+
+        test_error, test_accuracy = loss_and_accuracy(model_best,
+                                                      x_batch_test,
+                                                      t_batch_test)
 
     print "[test]  Accuracy:", test_accuracy
     print "[train] Loss:", train_loss.data
