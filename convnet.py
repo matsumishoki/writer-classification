@@ -22,11 +22,11 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     t = Variable(t_data)
 
     # 順伝播
-    # 1.C5,p2
+    # 1.C3,p2
     h = model.conv_1(x)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
-    # 2.C3,p2
+    # 2.C4,p2
     h = model.conv_2(h)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
@@ -34,16 +34,18 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     h = model.conv_3(h)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
-    # 4.C5,p2
+    # 4.C3,p2
     h = model.conv_4(h)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
-    # 5.C4,p2
+    # 5.C3,p2
     h = model.conv_5(h)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
-    # 6.C3
+    # 6.C3,p2
     h = model.conv_6(h)
+    h = F.max_pooling_2d(h, 2)
+    h = F.relu(h)
     h = model.linear_1(h)
     h = F.relu(h)
     a_y = model.linear_2(h)
@@ -180,11 +182,11 @@ if __name__ == '__main__':
     num_classes = len(classes)  # クラス数
     dim_features = x_train.shape[-1]  # xの次元
 
-    model = FunctionSet(conv_1=F.Convolution2D(1, 50, 5),
-                        conv_2=F.Convolution2D(50, 50, 3),
+    model = FunctionSet(conv_1=F.Convolution2D(1, 50, 3),
+                        conv_2=F.Convolution2D(50, 50, 4),
                         conv_3=F.Convolution2D(50, 100, 5),
-                        conv_4=F.Convolution2D(100, 200, 5),
-                        conv_5=F.Convolution2D(200, 100, 4),
+                        conv_4=F.Convolution2D(100, 200, 3),
+                        conv_5=F.Convolution2D(200, 100, 3),
                         conv_6=F.Convolution2D(100, 200, 3),
                         linear_1=F.Linear(200, 400, wscale=wscale_1),
                         linear_2=F.Linear(400, num_classes,
