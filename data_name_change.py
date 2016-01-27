@@ -15,7 +15,7 @@ from skimage.color import rgb2gray
 from skimage.filters import threshold_otsu
 
 # 検索するデータセットのファイルのtop_pathを指定する
-top_path = os.path.join("resized_normal_train")
+top_path = os.path.join("resized_normal")
 temp_list = [data_filepath for data_filepath in os.walk(top_path)]
 num_temp_list = len(temp_list)
 
@@ -33,7 +33,7 @@ for filename in filenames:
     print name[3:]
     name = name[3:]
 
-    save_path = "C:\\Users\\matsumi\\Desktop\\writer classification\\resized_train\\"
+    save_path = "C:\\Users\\matsumi\\Desktop\\writer classification\\resized_test\\"
     saveFilename = save_path + name + ".png"   # name + 新しい拡張子(.png)
     print saveFilename
     skimage.io.imsave(saveFilename, image)
