@@ -84,12 +84,13 @@ def make_epoch_train_data():
                            "0612-1-cropped.png", "0612-2-cropped.png",
                            "0612-3-cropped.png", "0612-4-cropped.png"]
     # 検索するデータセットのファイルのtop_pathを指定する
-    top_path = os.path.join("CVL_ConvNet_data")
+#    top_path = os.path.join("CVL_ConvNet_data")
+    top_path = os.path.join("resized_train")
     temp_list = [data_filepath for data_filepath in os.walk(top_path)]
     tup = temp_list[0]
     (dirpath, dirnames, filenames) = tup
 
-    lower_text = 1500
+    lower_text = 1250
     image_size = 200
     images = []
     file_numbers = []
@@ -141,12 +142,13 @@ def make_epoch_test_data():
                            "0612-1-cropped.png", "0612-2-cropped.png",
                            "0612-3-cropped.png", "0612-4-cropped.png"]
     # 検索するデータセットのファイルのtop_pathを指定する
-    top_path = os.path.join("CVL_test_data")
+#    top_path = os.path.join("CVL_test_data")
+    top_path = os.path.join("resized_test")
     temp_list = [data_filepath for data_filepath in os.walk(top_path)]
     tup = temp_list[0]
     (dirpath, dirnames, filenames) = tup
 
-    lower_text = 1500
+    lower_text = 1250
     image_size = 200
     images = []
     file_numbers = []
@@ -190,8 +192,8 @@ def make_epoch_test_data():
 if __name__ == '__main__':
 
     # 超パラメータの定義
-    learning_rate = 0.01  # learning_rate(学習率)を定義する
-    max_iteration = 10      # 学習させる回数
+    learning_rate = 0.0001  # learning_rate(学習率)を定義する
+    max_iteration = 20      # 学習させる回数
     batch_size = 3       # ミニバッチ1つあたりのサンプル数
     dim_hidden_1 = 500         # 隠れ層の次元数を定義する
     dim_hidden_2 = 500
@@ -308,7 +310,7 @@ if __name__ == '__main__':
         plt.title("Loss")
         plt.plot(loss_history)
         plt.legend(["train"], loc="best")
-        plt.ylim([0.0, 50])
+        plt.ylim([0.0, 6])
         plt.grid()
 
         plt.subplot(1, 2, 2)
