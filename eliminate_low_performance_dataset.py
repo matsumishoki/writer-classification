@@ -15,18 +15,22 @@ from skimage.color import rgb2gray
 from skimage.filters import threshold_otsu
 
 # 検索するデータセットのファイルのtop_pathを指定する
-top_path = os.path.join("CVL_test_data")
+#top_path = os.path.join("CVL_test_data")
+top_path = os.path.join("resized_normal")
+
 temp_list = [data_filepath for data_filepath in os.walk(top_path)]
 tup = temp_list[0]
 (dirpath, dirnames, filenames) = tup
 
 image_size = 200
-lower_text = 2500
+lower_text = 1500
 images = []
 file_numbers = []
 # 削除したいファイル名を指定する
-exclusion_filenames = ["0431-1-cropped.png", "0431-2-cropped.png",
-                       "0431-3-cropped.png", "0431-4-cropped.png"]
+exclusion_filenames = ["re_0431-1-cropped.png", "re_0431-2-cropped.png",
+                       "re_0431-3-cropped.png", "re_0431-4-cropped.png",
+                       "re_0612-1-cropped.png", "re_0612-2-cropped.png",
+                       "re_0612-3-cropped.png", "re_0612-4-cropped.png"]
 for filename in filenames:
     if filename in exclusion_filenames:
         continue
