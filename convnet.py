@@ -146,6 +146,7 @@ def make_epoch_test_data():
     tup = temp_list[0]
     (dirpath, dirnames, filenames) = tup
 
+    lower_text = 1500
     image_size = 200
     images = []
     file_numbers = []
@@ -164,14 +165,19 @@ def make_epoch_test_data():
         # １人あたり3種類の画像から1枚ずつ切り出し画像を作成する
         x_select_points = width - image_size
         y_select_points = heigh - image_size
-        x_select_point = np.random.permutation(x_select_points)
-        y_select_point = np.random.permutation(y_select_points)
-        y_p = y_select_point[0]
-        x_p = x_select_point[0]
 
-        image = image[y_p:y_p+image_size, x_p:x_p+image_size].copy()
+        # 決められた文字の量が切り出し画像に含まれるようにする
+        while True:
+            x_select_point = np.random.permutation(x_select_points)
+            y_select_point = np.random.permutation(y_select_points)
+            y_p = y_select_point[0]
+            x_p = x_select_point[0]
+            cropped_image = image[y_p:y_p+image_size,
+                                  x_p:x_p+image_size].copy()
+            if np.count_nonzero(cropped_image) > lower_text:
+                break
         text_name = name[:4]
-        images.append(image)
+        images.append(cropped_image)
         file_numbers.append(text_name)
 
     x = np.array(images).reshape(-1, 1, image_size, image_size)
