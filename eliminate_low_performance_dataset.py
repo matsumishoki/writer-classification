@@ -24,9 +24,12 @@ image_size = 200
 lower_text = 2500
 images = []
 file_numbers = []
+# 削除したいファイル名を指定する
 exclusion_filenames = ["0431-1-cropped.png", "0431-2-cropped.png",
                        "0431-3-cropped.png", "0431-4-cropped.png"]
 for filename in filenames:
+    if filename in exclusion_filenames:
+        continue
     image = plt.imread(os.path.join(dirpath, filename))
 
     # 画像データの名前と拡張子を分離する
@@ -55,6 +58,7 @@ for filename in filenames:
         cropped_image = image[y_p:y_p+image_size, x_p:x_p+image_size]
         if np.count_nonzero(cropped_image) > lower_text:
             break
+    print "filename:", filename
 #    while True:
 #        y_p = y_select_point[points_num]
 #        x_p = x_select_point[points_num]
