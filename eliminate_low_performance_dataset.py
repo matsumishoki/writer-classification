@@ -45,6 +45,18 @@ for filename in filenames:
     image_1 = image[y_p:y_p+image_size, x_p:x_p+image_size]
 
     # 切り出し画像の切り出し位置を変更をする
+
+    # x_pの位置を変更してループを回す
+
+        # y_pの位置を変更してループを回す
+
+            # if num_text_range < lower_textが4000を超えるとループを抜けて
+
+            # 外側のループ(for filename in filenames:)に戻る
+
+            # それ以外ならば，y_pの位置を変更する．y_p全通り見たならばx_pを変更する
+
+    # 1回だけ変更する←これを上のスケッチのようにしたい
     num_text_range = np.sum(np.ones((image_size, image_size)) == image)
     if num_text_range < lower_text:
         y_p = y_select_point[1]
