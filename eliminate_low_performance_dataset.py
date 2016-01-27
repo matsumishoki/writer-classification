@@ -23,7 +23,7 @@ tup = temp_list[0]
 (dirpath, dirnames, filenames) = tup
 
 image_size = 200
-lower_text = 1500
+lower_text = 1500  # このファイルでは，この数値が限界
 images = []
 file_numbers = []
 # 削除したいファイル名を指定する
