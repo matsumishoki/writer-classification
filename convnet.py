@@ -78,6 +78,11 @@ def renumber(array):
 
 # エポック毎に訓練データを作成する関数
 def make_epoch_train_data():
+    # 削除したいファイル名を指定する
+    exclusion_filenames = ["0431-1-cropped.png", "0431-2-cropped.png",
+                           "0431-3-cropped.png", "0431-4-cropped.png",
+                           "0612-1-cropped.png", "0612-2-cropped.png",
+                           "0612-3-cropped.png", "0612-4-cropped.png"]
     # 検索するデータセットのファイルのtop_pathを指定する
     top_path = os.path.join("CVL_ConvNet_data")
     temp_list = [data_filepath for data_filepath in os.walk(top_path)]
@@ -88,6 +93,8 @@ def make_epoch_train_data():
     images = []
     file_numbers = []
     for filename in filenames:
+        if filename in exclusion_filenames:
+            continue
 
         # 画像データの名前と拡張子を分離する
         name, ext = os.path.splitext(filename)
@@ -122,6 +129,11 @@ def make_epoch_train_data():
 
 # エポック毎にテストデータを作成する関数
 def make_epoch_test_data():
+    # 削除したいファイル名を指定する
+    exclusion_filenames = ["0431-1-cropped.png", "0431-2-cropped.png",
+                           "0431-3-cropped.png", "0431-4-cropped.png",
+                           "0612-1-cropped.png", "0612-2-cropped.png",
+                           "0612-3-cropped.png", "0612-4-cropped.png"]
     # 検索するデータセットのファイルのtop_pathを指定する
     top_path = os.path.join("CVL_test_data")
     temp_list = [data_filepath for data_filepath in os.walk(top_path)]
@@ -132,6 +144,8 @@ def make_epoch_test_data():
     images = []
     file_numbers = []
     for filename in filenames:
+        if filename in exclusion_filenames:
+            continue
         image = plt.imread(os.path.join(dirpath, filename))
 
         # 画像データの名前と拡張子を分離する
@@ -165,7 +179,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.01  # learning_rate(学習率)を定義する
-    max_iteration = 5      # 学習させる回数
+    max_iteration = 3      # 学習させる回数
     batch_size = 3       # ミニバッチ1つあたりのサンプル数
     dim_hidden_1 = 500         # 隠れ層の次元数を定義する
     dim_hidden_2 = 500
