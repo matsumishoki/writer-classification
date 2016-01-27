@@ -42,5 +42,16 @@ for filename in filenames:
     x_p = x_select_point[0]
 
     image = image[y_p:y_p+image_size, x_p:x_p+image_size].copy()
+
+    num_text_range = np.sum(np.ones((200, 200)) == image)
+    if num_text_range < 4000:
+        y_p = y_select_point[1]
+        x_p = x_select_point[1]
+
+        image = image[y_p:y_p+image_size, x_p:x_p+image_size]
+
     text_name = name[:4]
-    print image
+    plt.imshow(image, cmap=plt.cm.gray)
+    plt.show()
+    plt.draw()
+#    print image
