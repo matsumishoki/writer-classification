@@ -21,6 +21,7 @@ tup = temp_list[0]
 (dirpath, dirnames, filenames) = tup
 
 image_size = 200
+lower_text = 4000
 images = []
 file_numbers = []
 for filename in filenames:
@@ -43,13 +44,13 @@ for filename in filenames:
 
     image_1 = image[y_p:y_p+image_size, x_p:x_p+image_size]
 
-    num_text_range = np.sum(np.ones((200, 200)) == image)
-    if num_text_range < 4000:
+    # 切り出し画像の切り出し位置を変更をする
+    num_text_range = np.sum(np.ones((image_size, image_size)) == image)
+    if num_text_range < lower_text:
         y_p = y_select_point[1]
         x_p = x_select_point[1]
 
         image_2 = image[y_p:y_p+image_size, x_p:x_p+image_size]
-
     text_name = name[:4]
     plt.imshow(image_1, cmap=plt.cm.gray)
     plt.show()
