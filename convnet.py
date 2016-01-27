@@ -191,7 +191,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.01  # learning_rate(学習率)を定義する
-    max_iteration = 3      # 学習させる回数
+    max_iteration = 10      # 学習させる回数
     batch_size = 3       # ミニバッチ1つあたりのサンプル数
     dim_hidden_1 = 500         # 隠れ層の次元数を定義する
     dim_hidden_2 = 500
@@ -308,7 +308,7 @@ if __name__ == '__main__':
         plt.title("Loss")
         plt.plot(loss_history)
         plt.legend(["train"], loc="best")
-        plt.ylim([0.0, 0.4])
+        plt.ylim([0.0, 50])
         plt.grid()
 
         plt.subplot(1, 2, 2)
