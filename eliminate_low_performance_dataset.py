@@ -21,9 +21,11 @@ tup = temp_list[0]
 (dirpath, dirnames, filenames) = tup
 
 image_size = 200
-lower_text = 4000
+lower_text = 2500
 images = []
 file_numbers = []
+exclusion_filenames = ["0431-1-cropped.png", "0431-2-cropped.png",
+                       "0431-3-cropped.png", "0431-4-cropped.png"]
 for filename in filenames:
     image = plt.imread(os.path.join(dirpath, filename))
 
@@ -44,8 +46,23 @@ for filename in filenames:
 
     image_1 = image[y_p:y_p+image_size, x_p:x_p+image_size]
 
+    point_num = 0
+    while True:
+        x_select_point = np.random.permutation(x_select_points)
+        y_select_point = np.random.permutation(y_select_points)
+        y_p = y_select_point[0]
+        x_p = x_select_point[0]
+        cropped_image = image[y_p:y_p+image_size, x_p:x_p+image_size]
+        if np.count_nonzero(cropped_image) > lower_text:
+            break
+#    while True:
+#        y_p = y_select_point[points_num]
+#        x_p = x_select_point[points_num]
+#        image_2 = image[y_p:y_p+image_size, x_p:x_p+image_size]
+#        num_text_range = np.sum(np.ones((image_size, image_size)) == image_2)
+#        if num_text_range < lower_text:
+#            break
     # 切り出し画像の切り出し位置を変更をする
-
     # x_pの位置を変更してループを回す
 
         # y_pの位置を変更してループを回す
@@ -57,17 +74,17 @@ for filename in filenames:
             # それ以外ならば，y_pの位置を変更する．y_p全通り見たならばx_pを変更する
 
     # 1回だけ変更する←これを上のスケッチのようにしたい
-    num_text_range = np.sum(np.ones((image_size, image_size)) == image)
-    if num_text_range < lower_text:
-        y_p = y_select_point[1]
-        x_p = x_select_point[1]
-
-        image_2 = image[y_p:y_p+image_size, x_p:x_p+image_size]
+#    num_text_range = np.sum(np.ones((image_size, image_size)) == image)
+#    if num_text_range < lower_text:
+#        y_p = y_select_point[1]
+#        x_p = x_select_point[1]
+#
+#        image_2 = image[y_p:y_p+image_size, x_p:x_p+image_size]
     text_name = name[:4]
-    plt.imshow(image_1, cmap=plt.cm.gray)
-    plt.show()
-    plt.draw()
-    plt.imshow(image_2, cmap=plt.cm.gray)
+#    plt.imshow(image_1, cmap=plt.cm.gray)
+#    plt.show()
+#    plt.draw()
+    plt.imshow(cropped_image, cmap=plt.cm.gray)
     plt.show()
     plt.draw()
 #    print image
