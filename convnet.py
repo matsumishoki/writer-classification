@@ -165,8 +165,8 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.01  # learning_rate(学習率)を定義する
-    max_iteration = 20      # 学習させる回数
-    batch_size = 50       # ミニバッチ1つあたりのサンプル数
+    max_iteration = 5      # 学習させる回数
+    batch_size = 3       # ミニバッチ1つあたりのサンプル数
     dim_hidden_1 = 500         # 隠れ層の次元数を定義する
     dim_hidden_2 = 500
     wscale_1 = 1.0
@@ -179,6 +179,7 @@ if __name__ == '__main__':
     # 訓練データに必要な定義をする
     x_train, t_train = make_epoch_train_data()
     num_train = len(x_train)
+    num_train = 6    # 学習させるサンプル数を減らしてみる
     classes = np.unique(t_train)  # 定義されたクラスラベル
     num_classes = len(classes)  # クラス数
     dim_features = x_train.shape[-1]  # xの次元
@@ -187,6 +188,7 @@ if __name__ == '__main__':
     # テストデータに必要な定義をする
     x_test, t_test = make_epoch_test_data()
     num_test = len(x_test)
+    num_test = 6    # 学習させるサンプル数を減らしてみる
     dim_features = x_train.shape[-1]  # xの次元
     num_test_batches = num_test / batch_size  # ミニバッチの個数
 
@@ -233,7 +235,7 @@ if __name__ == '__main__':
         time_start = time.time()
         perm_train = np.random.permutation(num_train)
         sort_train = np.sort(perm_train)
-        for batch_indexes in np.array_split(sort_train[:100],
+        for batch_indexes in np.array_split(sort_train[:6],
                                             num_train_batches):
             x_batch = cuda.to_gpu(x_train[batch_indexes])
             t_batch = cuda.to_gpu(t_train[batch_indexes])
@@ -258,7 +260,7 @@ if __name__ == '__main__':
 
         # 誤差
         # 訓練データセットの交差エントロピー誤差と正解率を表示する
-        for batch_indexes in np.array_split(sort_train[:100],
+        for batch_indexes in np.array_split(sort_train[:6],
                                             num_train_batches):
             x_batch_train = cuda.to_gpu(x_train[batch_indexes])
             t_batch_train = cuda.to_gpu(t_train[batch_indexes])
