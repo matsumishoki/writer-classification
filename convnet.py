@@ -193,7 +193,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.0001  # learning_rate(学習率)を定義する
-    max_iteration = 20      # 学習させる回数
+    max_iteration = 5      # 学習させる回数
     batch_size = 3       # ミニバッチ1つあたりのサンプル数
     dim_hidden_1 = 500         # 隠れ層の次元数を定義する
     dim_hidden_2 = 500
@@ -298,6 +298,13 @@ if __name__ == '__main__':
                                                            t_batch_train)
             train_losses.append(train_loss.data.get())
             train_accuracies.append(train_accuracy)
+
+        # w_1,w_2のノルムを表示する
+        print " |W_1|", np.linalg.norm(cuda.to_cpu(model.linear_1.W.data.get()))
+        print "w_1_grad_norm", w_1_grad_norm
+        print " |W_2|", np.linalg.norm(cuda.to_cpu(model.linear_2.W.data.get()))
+        print "w_2_grad_norm", w_2_grad_norm
+
         average_train_loss = np.array(train_losses).mean()
         average_train_accuracy = np.array(train_accuracies).mean()
         print "[train] Loss:", average_train_loss
@@ -349,6 +356,7 @@ if __name__ == '__main__':
         test_accuracies.append(test_accuracy)
     average_test_loss = np.array(test_losses).mean()
     average_test_accuracy = np.array(test_accuracies).mean()
+#    print " |W|", [np.linalg.norm(cuda.to_cpu(w)) for w inmodel.parameters]
 
     print "[test]  Accuracy:", test_accuracy
     print "[train] Loss:", train_loss.data
