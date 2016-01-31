@@ -70,6 +70,7 @@ if __name__ == '__main__':
     num_test = len(x_test)
 
     classes = np.unique(t_train)  # 定義されたクラスラベル
+    classes = classes[:2]
     num_classes = len(classes)  # クラス数
     dim_features = x_train.shape[-1]  # xの次元
 
