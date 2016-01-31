@@ -175,6 +175,10 @@ if __name__ == '__main__':
 #            train_mean = cupy.mean(train_loss.data)
 
 #        train_mean_accuracies = cupy.mean(train_accuracies, dtype=cupy.float32)
+        print " |W_1|", np.linalg.norm(cuda.to_cpu(model.linear_1.W.data.get()))
+        print "w_1_grad_norm", w_1_grad_norm
+        print " |W_2|", np.linalg.norm(cuda.to_cpu(model.linear_2.W.data.get()))
+        print "w_2_grad_norm", w_2_grad_norm
         print "[train] Loss:", train_loss.data
         print "[train] Accuracy:", train_accuracy
         loss_history.append(train_loss.data.get())
