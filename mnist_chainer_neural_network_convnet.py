@@ -65,9 +65,13 @@ if __name__ == '__main__':
     print "x_test.shape:", x_test.shape
     print "t_test.shape:", t_test.shape
 
-    num_train = len(x_train)
-    num_valid = len(x_valid)
-    num_test = len(x_test)
+#    num_train = len(x_train)
+#    num_valid = len(x_valid)
+#    num_test = len(x_test)
+    # 学習させるサンプル数を減らす
+    num_train = 6
+    num_valid = 6
+    num_test = 6
 
     classes = np.unique(t_train)  # 定義されたクラスラベル
     classes = classes[:2]
