@@ -188,15 +188,16 @@ if __name__ == '__main__':
         # E(K×K)を出す0.5×(y-t)×(y-t).T次元数は，{0.5×(1×K)(K×1)}
         # E = sum(t×log(y)(1×K))
         # 訓練データセットの交差エントロピー誤差と正解率を表示する
-#        for batch_indexes in np.array_split(perm_train, num_train_batches):
-        x_batch_train = cuda.to_gpu(x_train[batch_indexes])
-        t_batch_train = cuda.to_gpu(t_train[batch_indexes])
+        perm_train = np.random.permutation(num_train)
+        for batch_indexes in np.array_split(perm_train, num_train_batches):
+            x_batch_train = cuda.to_gpu(x_train[batch_indexes])
+            t_batch_train = cuda.to_gpu(t_train[batch_indexes])
 
-        train_loss, train_accuracy = loss_and_accuracy(model,
-                                                       x_batch_train,
-                                                       t_batch_train)
-        train_losses.append(train_loss.data)
-        train_accuracies.append(train_accuracy)
+            train_loss, train_accuracy = loss_and_accuracy(model,
+                                                           x_batch_train,
+                                                           t_batch_train)
+            train_losses.append(train_loss.data)
+            train_accuracies.append(train_accuracy)
 #            train_mean = cupy.mean(train_loss.data)
 
 #        train_mean_accuracies = cupy.mean(train_accuracies, dtype=cupy.float32)
