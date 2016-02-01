@@ -60,7 +60,7 @@ if __name__ == '__main__':
     # 60000ある訓練データセットを50000と10000の評価のデータセットに分割する
     x_train, x_valid, t_train, t_valid = train_test_split(
         x_train, t_train, test_size=0.1, random_state=100)
-
+    num_train = len(x_train)
     print "x_train.shape:", x_train.shape
     print "t_train.shape:", t_train.shape
     print "x_valid.shape:", x_valid.shape
@@ -188,15 +188,15 @@ if __name__ == '__main__':
         # E(K×K)を出す0.5×(y-t)×(y-t).T次元数は，{0.5×(1×K)(K×1)}
         # E = sum(t×log(y)(1×K))
         # 訓練データセットの交差エントロピー誤差と正解率を表示する
-        for batch_indexes in np.array_split(perm_train, num_train_batches):
-            x_batch_train = cuda.to_gpu(x_train[batch_indexes])
-            t_batch_train = cuda.to_gpu(t_train[batch_indexes])
+#        for batch_indexes in np.array_split(perm_train, num_train_batches):
+        x_batch_train = cuda.to_gpu(x_train[batch_indexes])
+        t_batch_train = cuda.to_gpu(t_train[batch_indexes])
 
-            train_loss, train_accuracy = loss_and_accuracy(model,
-                                                           x_batch_train,
-                                                           t_batch_train)
-            train_losses.append(train_loss.data)
-            train_accuracies.append(train_accuracy)
+        train_loss, train_accuracy = loss_and_accuracy(model,
+                                                       x_batch_train,
+                                                       t_batch_train)
+        train_losses.append(train_loss.data)
+        train_accuracies.append(train_accuracy)
 #            train_mean = cupy.mean(train_loss.data)
 
 #        train_mean_accuracies = cupy.mean(train_accuracies, dtype=cupy.float32)
@@ -272,8 +272,8 @@ if __name__ == '__main__':
     # 学習済みのモデルをテストセットで誤差と正解率を求める
 
     test_error, test_accuracy = loss_and_accuracy(model_best,
-                                                  cuda.to_gpu(x_test[0]),
-                                                  cuda.to_gpu(t_test[0]))
+                                                  cuda.to_gpu(x_test),
+                                                  cuda.to_gpu(t_test))
 
     print "[test]  Accuracy:", test_accuracy
     print "[valid] Accuracy (best)  :", valid_accuracy_best
@@ -293,16 +293,16 @@ if __name__ == '__main__':
     print
 
     # wの可視化
-    print "|w_1_best|:", np.linalg.norm(model.linear_1.W.data)
-    # print "w_1_best:", model.linear_1.W.data
-    print "|w_2_best|:", np.linalg.norm(model.linear_2.W.data)
-    # print "w_2_best:", model.linear_2.W.data
-    print "|w_3_best|:", np.linalg.norm(model.linear_3.W.data)
-    # print "w_3_best:", model.linear_3.W.data
-    w_best = np.dot(model.linear_2.W.data, model.linear_1.W.data)
-    w_best = np.dot(model.linear_3.W.data, w_best)
-    fig, axes = plt.subplots(2, 5,  figsize=(10, 4))
-    for w_k, ax in zip(w_best, axes.ravel()):
-        w_true = w_k[0:784]  # w_trueとは結果をプロットするために定義したものである
-        ax.matshow(w_true.reshape(28, 28), cmap=plt.cm.gray)
-    plt.show()
+#    print "|w_1_best|:", np.linalg.norm(model.linear_1.W.data)
+#    # print "w_1_best:", model.linear_1.W.data
+#    print "|w_2_best|:", np.linalg.norm(model.linear_2.W.data)
+#    # print "w_2_best:", model.linear_2.W.data
+#    print "|w_3_best|:", np.linalg.norm(model.linear_3.W.data)
+#    # print "w_3_best:", model.linear_3.W.data
+#    w_best = np.dot(model.linear_2.W.data, model.linear_1.W.data)
+#    w_best = np.dot(model.linear_3.W.data, w_best)
+#    fig, axes = plt.subplots(2, 5,  figsize=(10, 4))
+#    for w_k, ax in zip(w_best, axes.ravel()):
+#        w_true = w_k[0:784]  # w_trueとは結果をプロットするために定義したものである
+#        ax.matshow(w_true.reshape(28, 28), cmap=plt.cm.gray)
+#    plt.show()
