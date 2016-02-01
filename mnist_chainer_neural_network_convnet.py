@@ -16,7 +16,7 @@ from chainer import Variable, FunctionSet
 import chainer.optimizers
 from chainer import cuda
 from chainer.cuda import cupy
-
+import random
 
 def loss_and_accuracy(model, x_data, t_data, train=False):
     x = Variable(x_data.reshape(-1, 1, 28, 28))
@@ -110,7 +110,7 @@ if __name__ == '__main__':
     valid_loss_best = 10
     num_train_batches = num_train / batch_size  # ミニバッチの個数
     num_valid_batches = num_valid / batch_size
-
+    num_mini_train = []
     # 学習させるループ
     for epoch in range(max_iteration):
         print "epoch:", epoch
@@ -125,16 +125,24 @@ if __name__ == '__main__':
 
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
-        perm_train = np.random.permutation(num_train)
+        x_train, t_train, x_test, t_test = load_mnist.load_mnist()
+        t_train = t_train.astype(np.int32)
+        t_test = t_test.astype(np.int32)
+        x_train = x_train[:12600]
+        t_train = t_train[:12600]
+        for i in range(6):
+            num_mini_train.append(random.choice(t_train))
+#        perm_train = np.random.permutation(num_train)
+#        sort_train = np.sort(perm_train)
 
-        for batch_indexes in np.array_split(perm_train, num_train_batches):
+        print num_mini_train
+        for batch_indexes in np.array_split(num_mini_train, num_train_batches):
             x_batch = cuda.to_gpu(x_train[batch_indexes])
             t_batch = cuda.to_gpu(t_train[batch_indexes])
 
             batch_loss, batch_accuracy = loss_and_accuracy(model,
                                                            x_batch, t_batch,
                                                            train=True)
-
             # 逆伝播
             optimizer.zero_grads()
             batch_loss.backward()
