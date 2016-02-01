@@ -69,10 +69,10 @@ if __name__ == '__main__':
     print "t_test.shape:", t_test.shape
 
 #    num_train = len(x_train)
-#    num_valid = len(x_valid)
+    num_valid = len(x_valid)
 #    num_test = len(x_test)
     # 学習させるサンプル数を減らす
-    num_valid = 6
+#    num_valid = 6
     num_test = 6
 
     classes = np.unique(t_train)  # 定義されたクラスラベル
@@ -82,7 +82,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.000001  # learning_rate(学習率)を定義する
-    max_iteration = 10      # 学習させる回数
+    max_iteration = 1000      # 学習させる回数
     batch_size = 6       # ミニバッチ1つあたりのサンプル数
     dim_hidden_1 = 500         # 隠れ層の次元数を定義する
     dim_hidden_2 = 500
@@ -246,7 +246,7 @@ if __name__ == '__main__':
         plt.plot(loss_history)
         plt.plot(loss_valid_history)
         plt.legend(["train", "valid"], loc="best")
-        plt.ylim([0.0, 0.4])
+        plt.ylim([0.0, 1.0])
         plt.grid()
 
         plt.subplot(1, 2, 2)
@@ -254,7 +254,7 @@ if __name__ == '__main__':
         plt.plot(train_accuracy_history)
         plt.plot(valid_accuracy_history)
         plt.legend(["train", "valid"], loc="best")
-        plt.ylim([91, 100])
+        plt.ylim([0, 100])
         plt.grid()
         plt.tight_layout()
         plt.show()
