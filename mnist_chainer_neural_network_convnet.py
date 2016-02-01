@@ -16,7 +16,7 @@ from chainer import Variable, FunctionSet
 import chainer.optimizers
 from chainer import cuda
 from chainer.cuda import cupy
-import random
+#import random
 
 def loss_and_accuracy(model, x_data, t_data, train=False):
     x = Variable(x_data.reshape(-1, 1, 28, 28))
@@ -48,6 +48,9 @@ if __name__ == '__main__':
     x_train, t_train, x_test, t_test = load_mnist.load_mnist()
     t_train = t_train.astype(np.int32)
     t_test = t_test.astype(np.int32)
+    num_train = 6000 * 2  # examples of class 0 and 1
+    x_train = x_train[:num_train]
+    t_train = t_train[:num_train]
     plt.matshow(x_train[0].reshape(28, 28), cmap=plt.cm.gray)
     plt.show()
 
@@ -69,7 +72,6 @@ if __name__ == '__main__':
 #    num_valid = len(x_valid)
 #    num_test = len(x_test)
     # 学習させるサンプル数を減らす
-    num_train = 6
     num_valid = 6
     num_test = 6
 
@@ -80,8 +82,8 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.000001  # learning_rate(学習率)を定義する
-    max_iteration = 100      # 学習させる回数
-    batch_size = 3       # ミニバッチ1つあたりのサンプル数
+    max_iteration = 10      # 学習させる回数
+    batch_size = 6       # ミニバッチ1つあたりのサンプル数
     dim_hidden_1 = 500         # 隠れ層の次元数を定義する
     dim_hidden_2 = 500
     wscale_1 = 1.0
@@ -110,7 +112,6 @@ if __name__ == '__main__':
     valid_loss_best = 10
     num_train_batches = num_train / batch_size  # ミニバッチの個数
     num_valid_batches = num_valid / batch_size
-    num_mini_train = []
     # 学習させるループ
     for epoch in range(max_iteration):
         print "epoch:", epoch
@@ -123,36 +124,52 @@ if __name__ == '__main__':
         train_losses = []
         train_accuracies = []
 
-        # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
-        x_train, t_train, x_test, t_test = load_mnist.load_mnist()
-        t_train = t_train.astype(np.int32)
-        t_test = t_test.astype(np.int32)
-        x_train = x_train[:12600]
-        t_train = t_train[:12600]
-        for i in range(6):
-            num_mini_train.append(random.choice(t_train))
+        num_mini_train = []
+        batch_indexes = np.random.choice(num_train, batch_size, False)
+        x_batch = cuda.to_gpu(x_train[batch_indexes])
+        t_batch = cuda.to_gpu(t_train[batch_indexes])
+
+        batch_loss, batch_accuracy = loss_and_accuracy(model,
+                                                       x_batch, t_batch,
+                                                       train=True)
+
+        # 逆伝播
+        optimizer.zero_grads()
+        batch_loss.backward()
+#        optimizer.weight_decay(l_2)
+        optimizer.update()
+
+        w_1_grad_norm = np.linalg.norm(model.linear_1.W.grad.get())
+        w_1_grad_norms.append(w_1_grad_norm)
+        w_2_grad_norm = np.linalg.norm(model.linear_2.W.grad.get())
+        w_2_grad_norms.append(w_2_grad_norm)
+
+#        for i in range(6):
+#            num_mini_train.append(np.random.choice(t_train))
 #        perm_train = np.random.permutation(num_train)
 #        sort_train = np.sort(perm_train)
+#
+#        print num_mini_train
 
-        print num_mini_train
-        for batch_indexes in np.array_split(num_mini_train, num_train_batches):
-            x_batch = cuda.to_gpu(x_train[batch_indexes])
-            t_batch = cuda.to_gpu(t_train[batch_indexes])
-
-            batch_loss, batch_accuracy = loss_and_accuracy(model,
-                                                           x_batch, t_batch,
-                                                           train=True)
-            # 逆伝播
-            optimizer.zero_grads()
-            batch_loss.backward()
+        # mini batchi SGDで重みを更新させるループ
+#        for batch_indexes in np.array_split(num_mini_train, num_train_batches):
+#            x_batch = cuda.to_gpu(x_train[batch_indexes])
+#            t_batch = cuda.to_gpu(t_train[batch_indexes])
+#
+#            batch_loss, batch_accuracy = loss_and_accuracy(model,
+#                                                           x_batch, t_batch,
+#                                                           train=True)
+#            # 逆伝播
+#            optimizer.zero_grads()
+#            batch_loss.backward()
 #            optimizer.weight_decay(l_2)
-            optimizer.update()
-
-            w_1_grad_norm = np.linalg.norm(model.linear_1.W.grad.get())
-            w_1_grad_norms.append(w_1_grad_norm)
-            w_2_grad_norm = np.linalg.norm(model.linear_2.W.grad.get())
-            w_2_grad_norms.append(w_2_grad_norm)
+#            optimizer.update()
+#
+#            w_1_grad_norm = np.linalg.norm(model.linear_1.W.grad.get())
+#            w_1_grad_norms.append(w_1_grad_norm)
+#            w_2_grad_norm = np.linalg.norm(model.linear_2.W.grad.get())
+#            w_2_grad_norms.append(w_2_grad_norm)
 #            w_3_grad_norm = np.linalg.norm(model.linear_3.W.grad.get())
 #            w_3_grad_norms.append(w_3_grad_norm)
 #
