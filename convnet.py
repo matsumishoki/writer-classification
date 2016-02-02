@@ -193,7 +193,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.0001  # learning_rate(学習率)を定義する
-    max_iteration = 5      # 学習させる回数
+    max_iteration = 10000      # 学習させる回数
     batch_size = 3       # ミニバッチ1つあたりのサンプル数
     dim_hidden_1 = 500         # 隠れ層の次元数を定義する
     dim_hidden_2 = 500
