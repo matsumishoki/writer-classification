@@ -84,8 +84,7 @@ def make_epoch_train_data(num_classes=309):
                            "0612-1-cropped.png", "0612-2-cropped.png",
                            "0612-3-cropped.png", "0612-4-cropped.png"]
     # 検索するデータセットのファイルのtop_pathを指定する
-#    top_path = os.path.join("CVL_ConvNet_data")
-    top_path = os.path.join("resized_train")
+    top_path = os.path.join("CVL_ConvNet_data")
     temp_list = [data_filepath for data_filepath in os.walk(top_path)]
     tup = temp_list[0]
     (dirpath, dirnames, filenames) = tup
@@ -146,8 +145,7 @@ def make_epoch_test_data(num_classes=309):
                            "0612-1-cropped.png", "0612-2-cropped.png",
                            "0612-3-cropped.png", "0612-4-cropped.png"]
     # 検索するデータセットのファイルのtop_pathを指定する
-#    top_path = os.path.join("CVL_test_data")
-    top_path = os.path.join("resized_test")
+    top_path = os.path.join("CVL_test_data")
     temp_list = [data_filepath for data_filepath in os.walk(top_path)]
     tup = temp_list[0]
     (dirpath, dirnames, filenames) = tup
@@ -201,13 +199,13 @@ if __name__ == '__main__':
     # 超パラメータの定義
     learning_rate = 0.0001  # learning_rate(学習率)を定義する
     max_iteration = 10000      # 学習させる回数
-    batch_size = 40       # ミニバッチ1つあたりのサンプル数
+    batch_size = 10       # ミニバッチ1つあたりのサンプル数
     wscale_1 = 1.0
     wscale_2 = 1.0
     l_2 = 0.0015
     train_accuracy_best = 0
     train_loss_best = 10
-    num_classes = 20
+    num_classes = 10
     # 訓練データに必要な定義をする
     x_train, t_train = make_epoch_train_data(num_classes)
     num_train = len(x_train)
@@ -218,13 +216,12 @@ if __name__ == '__main__':
     # テストデータに必要な定義をする
     x_test, t_test = make_epoch_test_data(num_classes)
     num_test = len(x_test)    # 学習させるサンプル数を減らしてみる
-    dim_features = x_train.shape[-1]  # xの次元
     num_test_batches = 1 + (num_test / batch_size)  # ミニバッチの個数
 
     # モデルの定義をする
     model = FunctionSet(conv_1=F.Convolution2D(1, 50, 3),
-                        conv_2=F.Convolution2D(50, 50, 4),
-                        conv_3=F.Convolution2D(50, 100, 5),
+                        conv_2=F.Convolution2D(50, 100, 4),
+                        conv_3=F.Convolution2D(100, 100, 5),
                         conv_4=F.Convolution2D(100, 200, 3),
                         conv_5=F.Convolution2D(200, 100, 3),
                         conv_6=F.Convolution2D(100, 200, 3),
