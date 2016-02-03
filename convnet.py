@@ -77,7 +77,7 @@ def renumber(array):
 
 
 # エポック毎に訓練データを作成する関数
-def make_epoch_train_data():
+def make_epoch_train_data(num_classes=309):
     # 削除したいファイル名を指定する
     exclusion_filenames = ["0431-1-cropped.png", "0431-2-cropped.png",
                            "0431-3-cropped.png", "0431-4-cropped.png",
@@ -94,6 +94,9 @@ def make_epoch_train_data():
     image_size = 200
     images = []
     file_numbers = []
+    # 二値分類にしようするファイルの数を指定する
+    num_files = num_classes * 4
+    filenames = filenames[:num_files]
     for filename in filenames:
         if filename in exclusion_filenames:
             continue
@@ -114,6 +117,7 @@ def make_epoch_train_data():
         y_select_points = heigh - image_size
 
         # 決められた文字の量が切り出し画像に含まれるようにする
+#        for i in range(1):
         while True:
             x_select_point = np.random.permutation(x_select_points)
             y_select_point = np.random.permutation(y_select_points)
@@ -135,7 +139,7 @@ def make_epoch_train_data():
 
 
 # エポック毎にテストデータを作成する関数
-def make_epoch_test_data():
+def make_epoch_test_data(num_classes=309):
     # 削除したいファイル名を指定する
     exclusion_filenames = ["0431-1-cropped.png", "0431-2-cropped.png",
                            "0431-3-cropped.png", "0431-4-cropped.png",
@@ -152,6 +156,8 @@ def make_epoch_test_data():
     image_size = 200
     images = []
     file_numbers = []
+    # 二値分類にしようするファイルの数を指定する
+    filenames = filenames[:num_classes]
     for filename in filenames:
         if filename in exclusion_filenames:
             continue
@@ -170,6 +176,7 @@ def make_epoch_test_data():
 
         # 決められた文字の量が切り出し画像に含まれるようにする
         while True:
+#        for i in range(1):
             x_select_point = np.random.permutation(x_select_points)
             y_select_point = np.random.permutation(y_select_points)
             y_p = y_select_point[0]
@@ -194,31 +201,25 @@ if __name__ == '__main__':
     # 超パラメータの定義
     learning_rate = 0.0001  # learning_rate(学習率)を定義する
     max_iteration = 10000      # 学習させる回数
-    batch_size = 3       # ミニバッチ1つあたりのサンプル数
-    dim_hidden_1 = 500         # 隠れ層の次元数を定義する
-    dim_hidden_2 = 500
+    batch_size = 40       # ミニバッチ1つあたりのサンプル数
     wscale_1 = 1.0
     wscale_2 = 1.0
-    wscale_3 = 1.0
     l_2 = 0.0015
     train_accuracy_best = 0
     train_loss_best = 10
-
+    num_classes = 20
     # 訓練データに必要な定義をする
-    x_train, t_train = make_epoch_train_data()
+    x_train, t_train = make_epoch_train_data(num_classes)
     num_train = len(x_train)
-    num_train = 6    # 学習させるサンプル数を減らしてみる
     classes = np.unique(t_train)  # 定義されたクラスラベル
     num_classes = len(classes)  # クラス数
-    dim_features = x_train.shape[-1]  # xの次元
     num_train_batches = num_train / batch_size  # ミニバッチの個数
 
     # テストデータに必要な定義をする
-    x_test, t_test = make_epoch_test_data()
-    num_test = len(x_test)
-    num_test = 6    # 学習させるサンプル数を減らしてみる
+    x_test, t_test = make_epoch_test_data(num_classes)
+    num_test = len(x_test)    # 学習させるサンプル数を減らしてみる
     dim_features = x_train.shape[-1]  # xの次元
-    num_test_batches = num_test / batch_size  # ミニバッチの個数
+    num_test_batches = 1 + (num_test / batch_size)  # ミニバッチの個数
 
     # モデルの定義をする
     model = FunctionSet(conv_1=F.Convolution2D(1, 50, 3),
@@ -234,6 +235,7 @@ if __name__ == '__main__':
     loss_history = []
     train_accuracy_history = []
     test_accuracy_history = []
+    loss_test_history = []
     # 学習させるループ
     for epoch in range(max_iteration):
         print "epoch:", epoch
@@ -248,13 +250,13 @@ if __name__ == '__main__':
         test_losses = []
         test_accuracies = []
 
-        x_train, t_train = make_epoch_train_data()
-        print "x_train.shape:", x_train.shape
-        print "t_train:", t_train.shape
+        x_train, t_train = make_epoch_train_data(num_classes)
+#        print "x_train.shape:", x_train.shape
+#        print "t_train:", t_train.shape
 
-        x_test, t_test = make_epoch_test_data()
-        print "x_test.shape:", x_test.shape
-        print "t_test.shape:", t_test.shape
+        x_test, t_test = make_epoch_test_data(num_classes)
+#        print "x_test.shape:", x_test.shape
+#        print "t_test.shape:", t_test.shape
 
         optimizer = chainer.optimizers.Adam(learning_rate)
         optimizer.setup(model)
@@ -262,8 +264,7 @@ if __name__ == '__main__':
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
         perm_train = np.random.permutation(num_train)
-        sort_train = np.sort(perm_train)
-        for batch_indexes in np.array_split(sort_train[:6],
+        for batch_indexes in np.array_split(perm_train,
                                             num_train_batches):
             x_batch = cuda.to_gpu(x_train[batch_indexes])
             t_batch = cuda.to_gpu(t_train[batch_indexes])
@@ -288,7 +289,7 @@ if __name__ == '__main__':
 
         # 誤差
         # 訓練データセットの交差エントロピー誤差と正解率を表示する
-        for batch_indexes in np.array_split(sort_train[:6],
+        for batch_indexes in np.array_split(np.arange(num_train),
                                             num_train_batches):
             x_batch_train = cuda.to_gpu(x_train[batch_indexes])
             t_batch_train = cuda.to_gpu(t_train[batch_indexes])
@@ -300,9 +301,11 @@ if __name__ == '__main__':
             train_accuracies.append(train_accuracy)
 
         # w_1,w_2のノルムを表示する
-        print " |W_1|", np.linalg.norm(cuda.to_cpu(model.linear_1.W.data.get()))
+        print " |W_1|",
+        np.linalg.norm(cuda.to_cpu(model.linear_1.W.data.get()))
         print "w_1_grad_norm", w_1_grad_norm
-        print " |W_2|", np.linalg.norm(cuda.to_cpu(model.linear_2.W.data.get()))
+        print " |W_2|",
+        np.linalg.norm(cuda.to_cpu(model.linear_2.W.data.get()))
         print "w_2_grad_norm", w_2_grad_norm
 
         average_train_loss = np.array(train_losses).mean()
@@ -312,18 +315,38 @@ if __name__ == '__main__':
         loss_history.append(average_train_loss)
         train_accuracy_history.append(average_train_accuracy)
 
+        # テストデータセットの交差エントロピー誤差と正解率を表示する
+        for batch_indexes in np.array_split(np.arange(num_test),
+                                            num_test_batches):
+            x_batch_test = cuda.to_gpu(x_test[batch_indexes])
+            t_batch_test = cuda.to_gpu(t_test[batch_indexes])
+
+            test_loss, test_accuracy = loss_and_accuracy(model,
+                                                         x_batch_test,
+                                                         t_batch_test)
+            test_losses.append(test_loss.data.get())
+            test_accuracies.append(test_accuracy)
+        average_test_loss = np.array(test_losses).mean()
+        average_test_accuracy = np.array(test_accuracies).mean()
+        loss_test_history.append(average_test_loss)
+        test_accuracy_history.append(average_test_accuracy)
+        print "[test] Loss:", average_test_loss
+        print "[test]  Accuracy:", average_test_accuracy
+
         # 学習曲線をプロットする
         plt.subplot(1, 2, 1)
         plt.title("Loss")
-        plt.plot(loss_history)
-        plt.legend(["train"], loc="best")
-        plt.ylim([0.0, 6])
+        plt.plot(loss_test_history, 'g', label="test")
+        plt.plot(loss_history, 'b', label="train")
+        plt.legend(loc="best")
+#        plt.ylim([0.0, 1])
         plt.grid()
 
         plt.subplot(1, 2, 2)
         plt.title("Accuracy")
-        plt.plot(train_accuracy_history)
-        plt.legend(["train"], loc="best")
+        plt.plot(test_accuracy_history, 'g', label="test")
+        plt.plot(train_accuracy_history, 'b', label="train")
+        plt.legend(loc="best")
         plt.ylim([0, 100])
         plt.grid()
         plt.tight_layout()
@@ -342,16 +365,14 @@ if __name__ == '__main__':
             print
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
-    perm_test = np.random.permutation(num_test)
-    sort_test = np.sort(perm_test)
-    for batch_indexes in np.array_split(sort_test[:30],
+    for batch_indexes in np.array_split(np.arange(num_test),
                                         num_test_batches):
         x_batch_test = cuda.to_gpu(x_test[batch_indexes])
         t_batch_test = cuda.to_gpu(t_test[batch_indexes])
 
         test_loss, test_accuracy = loss_and_accuracy(model_best,
-                                                      x_batch_test,
-                                                      t_batch_test)
+                                                     x_batch_test,
+                                                     t_batch_test)
         test_losses.append(test_loss.data.get())
         test_accuracies.append(test_accuracy)
     average_test_loss = np.array(test_losses).mean()
@@ -364,11 +385,8 @@ if __name__ == '__main__':
     print "Finish epoch:", epoch
     print "Batch size:", batch_size
     print "Learning rate:", learning_rate
-    print "dim_hidden_1:", dim_hidden_1
-    print "dim_hidden_2:", dim_hidden_2
     print "wscale_1:", wscale_1
     print "wscale_2:", wscale_2
-    print "wscale_3:", wscale_3
     print "l_2:", l_2
 
     print
