@@ -34,11 +34,14 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     h = model.conv_3(h)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
-    # 4.C3,p2
+    # 4.C3
     h = model.conv_4(h)
     h = F.relu(h)
-    # 4-5.C1
+#     4-5.C1
     h = model.conv_4_5(h)
+    h = F.relu(h)
+#     4-5_2.C1,p2
+    h = model.conv_4_5_2(h)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
     # 5.C3,p2
@@ -201,7 +204,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.0001  # learning_rate(学習率)を定義する
-    max_iteration = 300      # 学習させる回数
+    max_iteration = 1000      # 学習させる回数
     batch_size = 10       # ミニバッチ1つあたりのサンプル数
     wscale_1 = 1.0
     wscale_2 = 1.0
@@ -227,6 +230,7 @@ if __name__ == '__main__':
                         conv_3=F.Convolution2D(100, 100, 5),
                         conv_4=F.Convolution2D(100, 200, 3),
                         conv_4_5=F.Convolution2D(200, 200, 1),
+                        conv_4_5_2=F.Convolution2D(200, 200, 1),
                         conv_5=F.Convolution2D(200, 200, 3),
                         conv_6=F.Convolution2D(200, 200, 3),
                         linear_1=F.Linear(200, 400, wscale=wscale_1),
