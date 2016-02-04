@@ -83,7 +83,7 @@ def renumber(array):
 
 
 # エポック毎に訓練データを作成する関数
-def make_epoch_train_data(num_classes=309):
+def make_epoch_train_data(num_classes=308):
     # 削除したいファイル名を指定する
     exclusion_filenames = ["0431-1-cropped.png", "0431-2-cropped.png",
                            "0431-3-cropped.png", "0431-4-cropped.png",
@@ -99,13 +99,10 @@ def make_epoch_train_data(num_classes=309):
     image_size = 200
     images = []
     file_numbers = []
-    # 二値分類にしようするファイルの数を指定する
+    filenames = sorted(list(set(filenames) - set(exclusion_filenames)))
     num_files = num_classes * 4
     filenames = filenames[:num_files]
     for filename in filenames:
-        if filename in exclusion_filenames:
-            continue
-
         # 画像データの名前と拡張子を分離する
         name, ext = os.path.splitext(filename)
 
@@ -144,7 +141,7 @@ def make_epoch_train_data(num_classes=309):
 
 
 # エポック毎にテストデータを作成する関数
-def make_epoch_test_data(num_classes=309):
+def make_epoch_test_data(num_classes=308):
     # 削除したいファイル名を指定する
     exclusion_filenames = ["0431-1-cropped.png", "0431-2-cropped.png",
                            "0431-3-cropped.png", "0431-4-cropped.png",
@@ -160,11 +157,9 @@ def make_epoch_test_data(num_classes=309):
     image_size = 200
     images = []
     file_numbers = []
-    # 二値分類にしようするファイルの数を指定する
+    filenames = sorted(list(set(filenames) - set(exclusion_filenames)))
     filenames = filenames[:num_classes]
     for filename in filenames:
-        if filename in exclusion_filenames:
-            continue
         image = plt.imread(os.path.join(dirpath, filename))
 
         # 画像データの名前と拡張子を分離する
@@ -180,7 +175,6 @@ def make_epoch_test_data(num_classes=309):
 
         # 決められた文字の量が切り出し画像に含まれるようにする
         while True:
-#        for i in range(1):
             x_select_point = np.random.permutation(x_select_points)
             y_select_point = np.random.permutation(y_select_points)
             y_p = y_select_point[0]
@@ -204,20 +198,20 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.0001  # learning_rate(学習率)を定義する
-    max_iteration = 1000      # 学習させる回数
-    batch_size = 10       # ミニバッチ1つあたりのサンプル数
+    max_iteration = 5000      # 学習させる回数
+    batch_size = 50       # ミニバッチ1つあたりのサンプル数
     wscale_1 = 1.0
     wscale_2 = 1.0
     l_2 = 0.0015
     train_accuracy_best = 0
     train_loss_best = 10
-    num_classes = 10
+    num_classes = 300
     # 訓練データに必要な定義をする
     x_train, t_train = make_epoch_train_data(num_classes)
     num_train = len(x_train)
     classes = np.unique(t_train)  # 定義されたクラスラベル
     num_classes = len(classes)  # クラス数
-    num_train_batches = num_train / batch_size  # ミニバッチの個数
+    num_train_batches = 1 + (num_train / batch_size)  # ミニバッチの個数
 
     # テストデータに必要な定義をする
     x_test, t_test = make_epoch_test_data(num_classes)
@@ -306,12 +300,11 @@ if __name__ == '__main__':
             train_accuracies.append(train_accuracy)
 
         # w_1,w_2のノルムを表示する
-        print " |W_1|",
-        np.linalg.norm(cuda.to_cpu(model.linear_1.W.data.get()))
+        print " |W_1|", np.linalg.norm(model.linear_1.W.data.get())
         print "w_1_grad_norm", w_1_grad_norm
-        print " |W_2|",
-        np.linalg.norm(cuda.to_cpu(model.linear_2.W.data.get()))
+        print " |W_2|", np.linalg.norm(model.linear_2.W.data.get())
         print "w_2_grad_norm", w_2_grad_norm
+        print " |W|", [np.linalg.norm(w.get()) for w in model.parameters]
 
         average_train_loss = np.array(train_losses).mean()
         average_train_accuracy = np.array(train_accuracies).mean()
@@ -382,10 +375,10 @@ if __name__ == '__main__':
         test_accuracies.append(test_accuracy)
     average_test_loss = np.array(test_losses).mean()
     average_test_accuracy = np.array(test_accuracies).mean()
-#    print " |W|", [np.linalg.norm(cuda.to_cpu(w)) for w inmodel.parameters]
 
     print "[test]  Accuracy:", test_accuracy
     print "[train] Loss:", train_loss.data
+    print "train_loss_best:", train_loss_best
     print "Best epoch :", epoch_best
     print "Finish epoch:", epoch
     print "Batch size:", batch_size
