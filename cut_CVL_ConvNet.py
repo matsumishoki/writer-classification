@@ -10,6 +10,7 @@ import scipy as sp
 from xml.etree import ElementTree
 import os
 import skimage
+import skimage.transform
 import skimage.io
 from skimage.color import rgb2gray
 from skimage.filters import threshold_otsu
@@ -37,11 +38,11 @@ print "num_file:", num_file
 # グレースケール化し，二値化した後のファイルのtop_pathを指定する
 change_path = os.path.join("CVL_ConvNet_data")
 
-a = plt.imread(os.path.join(change_path, "0001-1-cropped.tif"))
-y = a.shape[0]
-x = a.shape[1]
-l = a[50:(x-50), 400:(y-400)]
-plt.imshow(l)
+#a = plt.imread(os.path.join(change_path, "0001-1-cropped.tif"))
+#y = a.shape[0]
+#x = a.shape[1]
+#l = a[50:(y-50), 400:(x-400)]
+#plt.imshow(l)
 
 for filename in filenames:
     loadFileFullpath = os.path.join(dirpath, filename)
@@ -50,13 +51,19 @@ for filename in filenames:
     # グレースケール化した後に二値化する
     image = plt.imread(os.path.join(dirpath, filename))
     image_gray = rgb2gray(image)
+    image_gray = skimage.transform.rescale(image_gray, 0.5)
     thresh = threshold_otsu(image_gray)
     image_binary = image_gray > thresh
     image_inv = np.logical_not(image_binary)
     image_data = np.uint8(image_inv * 255)
 
+    cropped_size_h = 25
+    cropped_size_w = 200
+
     # 画像を横(左400，右400)，縦(上50,下50)切り取る
-    image_data = image_data[50:(x-50), 400:(y-400)]
+    height, width = image_data.shape
+    image_data = image_data[cropped_size_h:(height-cropped_size_h),
+                            cropped_size_w:(width-cropped_size_w)]
 
     # 画像データの名前と拡張子を分離する
     name, ext = os.path.splitext(filename)
