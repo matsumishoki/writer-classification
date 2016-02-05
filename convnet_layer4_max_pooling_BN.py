@@ -24,22 +24,26 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     # 順伝播
     # 1.C3,p2
     h = model.conv_1(x)
-    h = model.bn1(h)
+    h = model.bn1(h, test=not train)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
     # 2.C4,p2
     h = model.conv_2(h)
+    h = model.bn2(h, test=not train)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
     # 3.C5,p2
     h = model.conv_3(h)
+    h = model.bn3(h, test=not train)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
     # 4.C3
     h = model.conv_4(h)
+    h = model.bn4(h, test=not train)
     h = F.relu(h)
 #     4-5.C1
     h = model.conv_4_5(h)
+    h = model.bn4_5(h, test=not train)
     h = F.relu(h)
 #     4-5_2.C1,p2
     h = model.conv_4_5_2(h)
@@ -201,7 +205,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.0001  # learning_rate(学習率)を定義する
-    max_iteration = 5000      # 学習させる回数
+    max_iteration = 2000      # 学習させる回数
     batch_size = 10       # ミニバッチ1つあたりのサンプル数
     wscale_1 = 1.0
     wscale_2 = 1.0
@@ -234,7 +238,6 @@ if __name__ == '__main__':
                         conv_4_5=F.Convolution2D(200, 200, 1),
                         bn4_5=F.BatchNormalization(200),
                         conv_4_5_2=F.Convolution2D(200, 200, 1),
-                        bn4_5_2=F.BatchNormalization(200),
                         linear_1=F.Linear(200, 400, wscale=wscale_1),
                         linear_2=F.Linear(400, num_classes,
                                           wscale=wscale_2)).to_gpu()
