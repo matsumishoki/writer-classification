@@ -198,8 +198,8 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.0001  # learning_rate(学習率)を定義する
-    max_iteration = 5000      # 学習させる回数
-    batch_size = 50       # ミニバッチ1つあたりのサンプル数
+    max_iteration = 10000      # 学習させる回数
+    batch_size = 10       # ミニバッチ1つあたりのサンプル数
     wscale_1 = 1.0
     wscale_2 = 1.0
     l_2 = 0.0015
@@ -258,6 +258,8 @@ if __name__ == '__main__':
 #        print "t_test.shape:", t_test.shape
 
         optimizer = chainer.optimizers.Adam(learning_rate)
+
+#        optimizer = chainer.optimizers.RMSprop(learning_rate)
         optimizer.setup(model)
 
         # mini batchi SGDで重みを更新させるループ
@@ -305,6 +307,7 @@ if __name__ == '__main__':
         print " |W_2|", np.linalg.norm(model.linear_2.W.data.get())
         print "w_2_grad_norm", w_2_grad_norm
         print " |W|", [np.linalg.norm(w.get()) for w in model.parameters]
+        print " W_grad", [np.linalg.norm(w.get()) for w in model.gradients]
 
         average_train_loss = np.array(train_losses).mean()
         average_train_accuracy = np.array(train_accuracies).mean()
