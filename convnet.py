@@ -99,6 +99,7 @@ def make_epoch_train_data(num_classes=308):
     image_size = 200
     images = []
     file_numbers = []
+    # 削除したいファイルを削除する
     filenames = sorted(list(set(filenames) - set(exclusion_filenames)))
     num_files = num_classes * 4
     filenames = filenames[:num_files]
@@ -157,6 +158,7 @@ def make_epoch_test_data(num_classes=308):
     image_size = 200
     images = []
     file_numbers = []
+    # 削除したいファイルを削除する
     filenames = sorted(list(set(filenames) - set(exclusion_filenames)))
     filenames = filenames[:num_classes]
     for filename in filenames:
@@ -198,7 +200,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.0001  # learning_rate(学習率)を定義する
-    max_iteration = 2      # 学習させる回数
+    max_iteration = 5000      # 学習させる回数
     batch_size = 10       # ミニバッチ1つあたりのサンプル数
     wscale_1 = 1.0
     wscale_2 = 1.0
@@ -206,6 +208,7 @@ if __name__ == '__main__':
     test_accuracy_best = 0
     test_loss_best = 10
     num_classes = 300
+
     # 訓練データに必要な定義をする
     x_train, t_train = make_epoch_train_data(num_classes)
     num_train = len(x_train)
@@ -249,17 +252,11 @@ if __name__ == '__main__':
         test_losses = []
         test_accuracies = []
 
+        # 訓練データとテストデータを呼ぶ
         x_train, t_train = make_epoch_train_data(num_classes)
-#        print "x_train.shape:", x_train.shape
-#        print "t_train:", t_train.shape
-
         x_test, t_test = make_epoch_test_data(num_classes)
-#        print "x_test.shape:", x_test.shape
-#        print "t_test.shape:", t_test.shape
 
         optimizer = chainer.optimizers.Adam(learning_rate)
-
-#        optimizer = chainer.optimizers.RMSprop(learning_rate)
         optimizer.setup(model)
 
         # mini batchi SGDで重みを更新させるループ
@@ -391,5 +388,3 @@ if __name__ == '__main__':
     print "l_2:", l_2
 
     print
-
-    # wの可視化
