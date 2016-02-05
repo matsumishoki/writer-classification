@@ -24,6 +24,7 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     # 順伝播
     # 1.C3,p2
     h = model.conv_1(x)
+    h = model.bn1(h)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
     # 2.C4,p2
