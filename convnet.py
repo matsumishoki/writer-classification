@@ -198,13 +198,13 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.0001  # learning_rate(学習率)を定義する
-    max_iteration = 10000      # 学習させる回数
+    max_iteration = 2      # 学習させる回数
     batch_size = 10       # ミニバッチ1つあたりのサンプル数
     wscale_1 = 1.0
     wscale_2 = 1.0
     l_2 = 0.0015
-    train_accuracy_best = 0
-    train_loss_best = 10
+    test_accuracy_best = 0
+    test_loss_best = 10
     num_classes = 300
     # 訓練データに必要な定義をする
     x_train, t_train = make_epoch_train_data(num_classes)
@@ -354,15 +354,15 @@ if __name__ == '__main__':
         plt.show()
         plt.draw()
 
-        # 訓練データの誤差が良ければwの最善値を保存する
-        if train_loss.data <= train_loss_best:
+        # テストデータの誤差が良ければwの最善値を保存する
+        if test_loss.data <= test_loss_best:
             model_best = copy.deepcopy(model)
             epoch_best = epoch
-            train_loss_best = train_loss.data
-            train_accuracy_best = train_accuracy
+            test_loss_best = test_loss.data
+            test_accuracy_best = test_accuracy
             print "epoch_best:", epoch_best
-            print "train_loss_best:", train_loss_best
-            print "train_accuracy_best:", train_accuracy_best
+            print "test_loss_best:", test_loss_best
+            print "test_accuracy_best:", test_accuracy_best
             print
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
@@ -381,7 +381,7 @@ if __name__ == '__main__':
 
     print "[test]  Accuracy:", test_accuracy
     print "[train] Loss:", train_loss.data
-    print "train_loss_best:", train_loss_best
+    print "test_loss_best:", test_loss_best
     print "Best epoch :", epoch_best
     print "Finish epoch:", epoch
     print "Batch size:", batch_size
