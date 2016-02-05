@@ -42,16 +42,16 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     h = F.relu(h)
 #     4-5_2.C1,p2
     h = model.conv_4_5_2(h)
-    h = F.max_pooling_2d(h, 2)
+    h = F.max_pooling_2d(h, 20)
     h = F.relu(h)
-    # 5.C3,p2
-    h = model.conv_5(h)
-    h = F.max_pooling_2d(h, 2)
-    h = F.relu(h)
-    # 6.C3,p2
-    h = model.conv_6(h)
-    h = F.max_pooling_2d(h, 2)
-    h = F.relu(h)
+#    # 5.C3,p2
+#    h = model.conv_5(h)
+#    h = F.max_pooling_2d(h, 2)
+#    h = F.relu(h)
+#    # 6.C3,p2
+#    h = model.conv_6(h)
+#    h = F.max_pooling_2d(h, 2)
+#    h = F.relu(h)
     h = model.linear_1(h)
     h = F.relu(h)
     a_y = model.linear_2(h)
@@ -207,7 +207,7 @@ if __name__ == '__main__':
     l_2 = 0.0015
     test_accuracy_best = 0
     test_loss_best = 10
-    num_classes = 300
+    num_classes = 308
 
     # 訓練データに必要な定義をする
     x_train, t_train = make_epoch_train_data(num_classes)
@@ -228,8 +228,8 @@ if __name__ == '__main__':
                         conv_4=F.Convolution2D(100, 200, 3),
                         conv_4_5=F.Convolution2D(200, 200, 1),
                         conv_4_5_2=F.Convolution2D(200, 200, 1),
-                        conv_5=F.Convolution2D(200, 200, 3),
-                        conv_6=F.Convolution2D(200, 200, 3),
+#                        conv_5=F.Convolution2D(200, 200, 3),
+#                        conv_6=F.Convolution2D(200, 200, 3),
                         linear_1=F.Linear(200, 400, wscale=wscale_1),
                         linear_2=F.Linear(400, num_classes,
                                           wscale=wscale_2)).to_gpu()
