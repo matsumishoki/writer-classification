@@ -246,6 +246,8 @@ if __name__ == '__main__':
     train_accuracy_history = []
     test_accuracy_history = []
     loss_test_history = []
+    final_test_losses = []
+    final_test_accuracies = []
     # 学習させるループ
     for epoch in range(max_iteration):
         print "epoch:", epoch
@@ -373,18 +375,18 @@ if __name__ == '__main__':
     # 学習済みのモデルをテストセットで誤差と正解率を求める
     for batch_indexes in np.array_split(np.arange(num_test),
                                         num_test_batches):
-        x_batch_test = cuda.to_gpu(x_test[batch_indexes])
-        t_batch_test = cuda.to_gpu(t_test[batch_indexes])
+        f_x_batch_test = cuda.to_gpu(x_test[batch_indexes])
+        f_t_batch_test = cuda.to_gpu(t_test[batch_indexes])
 
-        test_loss, test_accuracy = loss_and_accuracy(model_best,
-                                                     x_batch_test,
-                                                     t_batch_test)
-        test_losses.append(test_loss.data.get())
-        test_accuracies.append(test_accuracy)
-    average_test_loss = np.array(test_losses).mean()
-    average_test_accuracy = np.array(test_accuracies).mean()
+        final_test_loss, final_test_accuracy = loss_and_accuracy(model_best,
+                                                                 f_x_batch_test,
+                                                                 f_t_batch_test)
+        final_test_losses.append(final_test_loss.data.get())
+        final_test_accuracies.append(final_test_accuracy)
+    average_final_test_loss = np.array(final_test_losses).mean()
+    average_final_test_accuracy = np.array(final_test_accuracies).mean()
 
-    print "[test]  Accuracy:", test_accuracy
+    print "[final_test]  Accuracy:", final_test_accuracy
     print "[train] Loss:", train_loss.data
     print "test_loss_best:", test_loss_best
     print "Best epoch :", epoch_best
@@ -396,4 +398,3 @@ if __name__ == '__main__':
     print "l_2:", l_2
 
     print
-
