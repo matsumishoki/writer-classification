@@ -44,14 +44,6 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     h = model.conv_4_5_2(h)
     h = F.relu(h)
     h = F.average_pooling_2d(h, 20)
-#    # 5.C3,p2
-#    h = model.conv_5(h)
-#    h = F.max_pooling_2d(h, 2)
-#    h = F.relu(h)
-#    # 6.C3,p2
-#    h = model.conv_6(h)
-#    h = F.max_pooling_2d(h, 2)
-#    h = F.relu(h)
     h = model.linear_1(h)
     h = F.relu(h)
     a_y = model.linear_2(h)
@@ -120,7 +112,6 @@ def make_epoch_train_data(num_classes=308):
         y_select_points = heigh - image_size
 
         # 決められた文字の量が切り出し画像に含まれるようにする
-#        for i in range(1):
         while True:
             x_select_point = np.random.permutation(x_select_points)
             y_select_point = np.random.permutation(y_select_points)
@@ -337,7 +328,6 @@ if __name__ == '__main__':
         plt.plot(loss_test_history, 'g', label="test")
         plt.plot(loss_history, 'b', label="train")
         plt.legend(loc="best")
-#        plt.ylim([0.0, 1])
         plt.grid()
 
         plt.subplot(1, 2, 2)
