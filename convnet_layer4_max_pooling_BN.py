@@ -41,24 +41,19 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     h = model.conv_4(h)
     h = model.bn4(h, test=not train)
     h = F.relu(h)
-#     4-5.C1
+    # 4-5.C1
     h = model.conv_4_5(h)
     h = model.bn4_5(h, test=not train)
     h = F.relu(h)
-#     4-5_2.C1,p2
+    # 4-5_2.C1,p2
     h = model.conv_4_5_2(h)
     h = F.max_pooling_2d(h, 20)
     h = F.relu(h)
-#    # 5.C3,p2
-#    h = model.conv_5(h)
-#    h = F.max_pooling_2d(h, 2)
-#    h = F.relu(h)
-#    # 6.C3,p2
-#    h = model.conv_6(h)
-#    h = F.max_pooling_2d(h, 2)
-#    h = F.relu(h)
+    # linear_1
     h = model.linear_1(h)
     h = F.relu(h)
+    h = F.dropout(h, ratio=0.9, train=train)
+    # linear_2
     a_y = model.linear_2(h)
 
     loss = F.softmax_cross_entropy(a_y, t)
@@ -125,7 +120,6 @@ def make_epoch_train_data(num_classes=308):
         y_select_points = heigh - image_size
 
         # 決められた文字の量が切り出し画像に含まれるようにする
-#        for i in range(1):
         while True:
             x_select_point = np.random.permutation(x_select_points)
             y_select_point = np.random.permutation(y_select_points)
