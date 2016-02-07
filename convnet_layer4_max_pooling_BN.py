@@ -15,7 +15,7 @@ from chainer import Variable, FunctionSet
 import chainer.optimizers
 from chainer import cuda
 from chainer.optimizers import SGD, Adam
-
+from chainer import serializers
 
 def loss_and_accuracy(model, x_data, t_data, train=False):
     x = Variable(x_data.reshape(-1, 1, 200, 200))
@@ -361,6 +361,7 @@ if __name__ == '__main__':
             epoch_best = epoch
             test_loss_best = test_loss.data
             test_accuracy_best = test_accuracy
+            serializers.save_npz("convnet_layer4_max_pooling_BN.npz", model)
             print "epoch_best:", epoch_best
             print "test_loss_best:", test_loss_best
             print "test_accuracy_best:", test_accuracy_best
