@@ -361,7 +361,7 @@ if __name__ == '__main__':
             epoch_best = epoch
             test_loss_best = test_loss.data
             test_accuracy_best = test_accuracy
-            serializers.save_hdf5("convnet_layer4_max_pooling_BN.npz", model)
+            serializers.save_hdf5("convnet_layer4_max_pooling_BN.hdf5", model)
             print "epoch_best:", epoch_best
             print "test_loss_best:", test_loss_best
             print "test_accuracy_best:", test_accuracy_best
