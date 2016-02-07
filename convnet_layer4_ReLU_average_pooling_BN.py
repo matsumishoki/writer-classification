@@ -227,7 +227,7 @@ if __name__ == '__main__':
                         conv_4=F.Convolution2D(100, 200, 3),
                         bn4=F.BatchNormalization(200),
                         conv_4_5=F.Convolution2D(200, 200, 1),
-                        bn4_5=F.BatchNormalization(100),
+                        bn4_5=F.BatchNormalization(200),
                         conv_4_5_2=F.Convolution2D(200, 200, 1),
                         linear_1=F.Linear(200, 400, wscale=wscale_1),
                         linear_2=F.Linear(400, num_classes,
