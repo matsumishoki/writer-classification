@@ -52,7 +52,7 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     # linear_1
     h = model.linear_1(h)
     h = F.relu(h)
-    h = F.dropout(h, ratio=0.9, train=train)
+    h = F.dropout(h, ratio=0.5, train=train)
     # linear_2
     a_y = model.linear_2(h)
 
