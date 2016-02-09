@@ -199,7 +199,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.0001  # learning_rate(学習率)を定義する
-    max_iteration = 3000      # 学習させる回数
+    max_iteration = 2000      # 学習させる回数
     batch_size = 10       # ミニバッチ1つあたりのサンプル数
     wscale_1 = 1.0
     wscale_2 = 1.0
@@ -236,6 +236,9 @@ if __name__ == '__main__':
                         linear_2=F.Linear(400, num_classes,
                                           wscale=wscale_2)).to_gpu()
 
+    optimizer = chainer.optimizers.Adam(learning_rate)
+    optimizer.setup(model)
+
     loss_history = []
     train_accuracy_history = []
     test_accuracy_history = []
@@ -259,9 +262,6 @@ if __name__ == '__main__':
         # 訓練データとテストデータを呼ぶ
         x_train, t_train = make_epoch_train_data(num_classes)
         x_test, t_test = make_epoch_test_data(num_classes)
-
-        optimizer = chainer.optimizers.Adam(learning_rate)
-        optimizer.setup(model)
 
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
@@ -361,7 +361,7 @@ if __name__ == '__main__':
             epoch_best = epoch
             test_loss_best = test_loss.data
             test_accuracy_best = test_accuracy
-            serializers.save_hdf5("convnet_layer4_max_pooling_BN_v2.hdf5", model)
+            serializers.save_hdf5("convnet_layer4_max_pooling_BN_v4.hdf5", model)
             print "epoch_best:", epoch_best
             print "test_loss_best:", test_loss_best
             print "test_accuracy_best:", test_accuracy_best
@@ -381,9 +381,13 @@ if __name__ == '__main__':
     average_final_test_loss = np.array(final_test_losses).mean()
     average_final_test_accuracy = np.array(final_test_accuracies).mean()
 
-    print "[final_test]  Accuracy:", final_test_accuracy
+
+    print "[final_test] Accuracy:", average_final_test_accuracy
+    print "[final_test] Loss:", average_final_test_loss
+    print "[train] Accuracy:", train_accuracy
     print "[train] Loss:", train_loss.data
-    print "test_loss_best:", test_loss_best
+    print "[best_test] Accuracy:", test_loss_best
+    print "[best_test] Loss:", test_loss_best
     print "Best epoch :", epoch_best
     print "Finish epoch:", epoch
     print "Batch size:", batch_size
