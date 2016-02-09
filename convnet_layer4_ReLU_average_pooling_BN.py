@@ -50,8 +50,11 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     h = model.conv_4_5_2(h)
     h = F.relu(h)
     h = F.average_pooling_2d(h, 20)
+    # linear_1
     h = model.linear_1(h)
     h = F.relu(h)
+    h = F.dropout(h, ratio=0.5, train=train)
+    # linear_2
     a_y = model.linear_2(h)
 
     loss = F.softmax_cross_entropy(a_y, t)
