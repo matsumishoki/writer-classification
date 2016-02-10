@@ -15,6 +15,7 @@ from chainer import Variable, FunctionSet
 import chainer.optimizers
 from chainer import cuda
 from chainer.optimizers import SGD, Adam
+from chainer import serializers
 
 
 def loss_and_accuracy(model, x_data, t_data, train=False):
@@ -200,7 +201,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.0001  # learning_rate(学習率)を定義する
-    max_iteration = 5000      # 学習させる回数
+    max_iteration = 1000      # 学習させる回数
     batch_size = 10       # ミニバッチ1つあたりのサンプル数
     wscale_1 = 1.0
     wscale_2 = 1.0
@@ -234,6 +235,8 @@ if __name__ == '__main__':
                         linear_2=F.Linear(400, num_classes,
                                           wscale=wscale_2)).to_gpu()
 
+    optimizer = chainer.optimizers.Adam(learning_rate)
+    optimizer.setup(model)
     loss_history = []
     train_accuracy_history = []
     test_accuracy_history = []
@@ -255,9 +258,6 @@ if __name__ == '__main__':
         # 訓練データとテストデータを呼ぶ
         x_train, t_train = make_epoch_train_data(num_classes)
         x_test, t_test = make_epoch_test_data(num_classes)
-
-        optimizer = chainer.optimizers.Adam(learning_rate)
-        optimizer.setup(model)
 
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
@@ -357,28 +357,33 @@ if __name__ == '__main__':
             epoch_best = epoch
             test_loss_best = test_loss.data
             test_accuracy_best = test_accuracy
+            serializers.save_hdf5("convnet_layer4_average_pooling_BN_v1.hdf5", model)
             print "epoch_best:", epoch_best
             print "test_loss_best:", test_loss_best
             print "test_accuracy_best:", test_accuracy_best
             print
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
+    final_test_losses = []
+    final_test_accuracies = []
     for batch_indexes in np.array_split(np.arange(num_test),
                                         num_test_batches):
-        x_batch_test = cuda.to_gpu(x_test[batch_indexes])
-        t_batch_test = cuda.to_gpu(t_test[batch_indexes])
+        f_x_batch_test = cuda.to_gpu(x_test[batch_indexes])
+        f_t_batch_test = cuda.to_gpu(t_test[batch_indexes])
 
-        test_loss, test_accuracy = loss_and_accuracy(model_best,
-                                                     x_batch_test,
-                                                     t_batch_test)
-        test_losses.append(test_loss.data.get())
-        test_accuracies.append(test_accuracy)
-    average_test_loss = np.array(test_losses).mean()
-    average_test_accuracy = np.array(test_accuracies).mean()
+        final_test_loss, final_test_accuracy = loss_and_accuracy(model_best,
+                                                                 f_x_batch_test,
+                                                                 f_t_batch_test)
+        final_test_losses.append(final_test_loss.data.get())
+        final_test_accuracies.append(final_test_accuracy)
+    average_final_test_loss = np.array(final_test_losses).mean()
+    average_final_test_accuracy = np.array(final_test_accuracies).mean()
 
-    print "[test]  Accuracy:", test_accuracy
+    print "[final_test] Accuracy:", average_final_test_accuracy
+    print "[final_test] Loss:", average_final_test_loss
     print "[train] Loss:", train_loss.data
-    print "test_loss_best:", test_loss_best
+    print "[best_test] Accuracy:", test_loss_best
+    print "[best_test] Loss:", test_loss_best
     print "Best epoch :", epoch_best
     print "Finish epoch:", epoch
     print "Batch size:", batch_size
