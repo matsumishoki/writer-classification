@@ -208,7 +208,7 @@ if __name__ == '__main__':
     l_2 = 0.0015
     test_accuracy_best = 0
     test_loss_best = 10
-    num_classes = 300
+    num_classes = 308
 
     # 訓練データに必要な定義をする
     x_train, t_train = make_epoch_train_data(num_classes)
