@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Jan 24 20:27:12 2016
+Created on Fri Feb 05 17:10:25 2016
 
 @author: matsumi
 """
@@ -15,7 +15,6 @@ from chainer import Variable, FunctionSet
 import chainer.optimizers
 from chainer import cuda
 from chainer.optimizers import SGD, Adam
-from chainer import serializers
 
 
 def loss_and_accuracy(model, x_data, t_data, train=False):
@@ -43,16 +42,16 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     h = F.relu(h)
 #     4-5_2.C1,p2
     h = model.conv_4_5_2(h)
-    h = F.max_pooling_2d(h, 2)
+    h = F.max_pooling_2d(h, 20)
     h = F.relu(h)
-    # 5.C3,p2
-    h = model.conv_5(h)
-    h = F.max_pooling_2d(h, 2)
-    h = F.relu(h)
-    # 6.C3,p2
-    h = model.conv_6(h)
-    h = F.max_pooling_2d(h, 2)
-    h = F.relu(h)
+#    # 5.C3,p2
+#    h = model.conv_5(h)
+#    h = F.max_pooling_2d(h, 2)
+#    h = F.relu(h)
+#    # 6.C3,p2
+#    h = model.conv_6(h)
+#    h = F.max_pooling_2d(h, 2)
+#    h = F.relu(h)
     h = model.linear_1(h)
     h = F.relu(h)
     a_y = model.linear_2(h)
@@ -201,7 +200,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.0001  # learning_rate(学習率)を定義する
-    max_iteration = 3000      # 学習させる回数
+    max_iteration = 5000      # 学習させる回数
     batch_size = 10       # ミニバッチ1つあたりのサンプル数
     wscale_1 = 1.0
     wscale_2 = 1.0
@@ -229,14 +228,12 @@ if __name__ == '__main__':
                         conv_4=F.Convolution2D(100, 200, 3),
                         conv_4_5=F.Convolution2D(200, 200, 1),
                         conv_4_5_2=F.Convolution2D(200, 200, 1),
-                        conv_5=F.Convolution2D(200, 200, 3),
-                        conv_6=F.Convolution2D(200, 200, 3),
+#                        conv_5=F.Convolution2D(200, 200, 3),
+#                        conv_6=F.Convolution2D(200, 200, 3),
                         linear_1=F.Linear(200, 400, wscale=wscale_1),
                         linear_2=F.Linear(400, num_classes,
                                           wscale=wscale_2)).to_gpu()
 
-    optimizer = chainer.optimizers.Adam(learning_rate)
-    optimizer.setup(model)
     loss_history = []
     train_accuracy_history = []
     test_accuracy_history = []
@@ -258,6 +255,9 @@ if __name__ == '__main__':
         # 訓練データとテストデータを呼ぶ
         x_train, t_train = make_epoch_train_data(num_classes)
         x_test, t_test = make_epoch_test_data(num_classes)
+
+        optimizer = chainer.optimizers.Adam(learning_rate)
+        optimizer.setup(model)
 
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
@@ -357,33 +357,28 @@ if __name__ == '__main__':
             epoch_best = epoch
             test_loss_best = test_loss.data
             test_accuracy_best = test_accuracy
-            serializers.save_hdf5("base_convnet_v1.hdf5", model)
             print "epoch_best:", epoch_best
             print "test_loss_best:", test_loss_best
             print "test_accuracy_best:", test_accuracy_best
             print
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
-    final_test_losses = []
-    final_test_accuracies = []
     for batch_indexes in np.array_split(np.arange(num_test),
                                         num_test_batches):
-        f_x_batch_test = cuda.to_gpu(x_test[batch_indexes])
-        f_t_batch_test = cuda.to_gpu(t_test[batch_indexes])
+        x_batch_test = cuda.to_gpu(x_test[batch_indexes])
+        t_batch_test = cuda.to_gpu(t_test[batch_indexes])
 
-        final_test_loss, final_test_accuracy = loss_and_accuracy(model_best,
-                                                                 f_x_batch_test,
-                                                                 f_t_batch_test)
-        final_test_losses.append(final_test_loss.data.get())
-        final_test_accuracies.append(final_test_accuracy)
-    average_final_test_loss = np.array(final_test_losses).mean()
-    average_final_test_accuracy = np.array(final_test_accuracies).mean()
+        test_loss, test_accuracy = loss_and_accuracy(model_best,
+                                                     x_batch_test,
+                                                     t_batch_test)
+        test_losses.append(test_loss.data.get())
+        test_accuracies.append(test_accuracy)
+    average_test_loss = np.array(test_losses).mean()
+    average_test_accuracy = np.array(test_accuracies).mean()
 
-    print "[final_test] Accuracy:", average_final_test_accuracy
-    print "[final_test] Loss:", average_final_test_loss
+    print "[test]  Accuracy:", test_accuracy
     print "[train] Loss:", train_loss.data
-    print "[best_test] Accuracy:", test_loss_best
-    print "[best_test] Loss:", test_loss_best
+    print "test_loss_best:", test_loss_best
     print "Best epoch :", epoch_best
     print "Finish epoch:", epoch
     print "Batch size:", batch_size
@@ -393,3 +388,4 @@ if __name__ == '__main__':
     print "l_2:", l_2
 
     print
+

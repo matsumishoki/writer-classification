@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Jan 24 20:27:12 2016
+Created on Fri Feb 05 22:36:01 2016
 
 @author: matsumi
 """
@@ -25,36 +25,36 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     # 順伝播
     # 1.C3,p2
     h = model.conv_1(x)
+    h = model.bn1(h, test=not train)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
     # 2.C4,p2
     h = model.conv_2(h)
+    h = model.bn2(h, test=not train)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
     # 3.C5,p2
     h = model.conv_3(h)
+    h = model.bn3(h, test=not train)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
     # 4.C3
     h = model.conv_4(h)
+    h = model.bn4(h, test=not train)
     h = F.relu(h)
-#     4-5.C1
+    # 4-5.C1
     h = model.conv_4_5(h)
+    h = model.bn4_5(h, test=not train)
     h = F.relu(h)
-#     4-5_2.C1,p2
+    # 4-5_2.C1,p2
     h = model.conv_4_5_2(h)
-    h = F.max_pooling_2d(h, 2)
+    h = F.max_pooling_2d(h, 20)
     h = F.relu(h)
-    # 5.C3,p2
-    h = model.conv_5(h)
-    h = F.max_pooling_2d(h, 2)
-    h = F.relu(h)
-    # 6.C3,p2
-    h = model.conv_6(h)
-    h = F.max_pooling_2d(h, 2)
-    h = F.relu(h)
+    # linear_1
     h = model.linear_1(h)
     h = F.relu(h)
+    h = F.dropout(h, ratio=0.5, train=train)
+    # linear_2
     a_y = model.linear_2(h)
 
     loss = F.softmax_cross_entropy(a_y, t)
@@ -121,7 +121,6 @@ def make_epoch_train_data(num_classes=308):
         y_select_points = heigh - image_size
 
         # 決められた文字の量が切り出し画像に含まれるようにする
-#        for i in range(1):
         while True:
             x_select_point = np.random.permutation(x_select_points)
             y_select_point = np.random.permutation(y_select_points)
@@ -224,23 +223,29 @@ if __name__ == '__main__':
 
     # モデルの定義をする
     model = FunctionSet(conv_1=F.Convolution2D(1, 50, 3),
+                        bn1=F.BatchNormalization(50),
                         conv_2=F.Convolution2D(50, 100, 4),
+                        bn2=F.BatchNormalization(100),
                         conv_3=F.Convolution2D(100, 100, 5),
+                        bn3=F.BatchNormalization(100),
                         conv_4=F.Convolution2D(100, 200, 3),
+                        bn4=F.BatchNormalization(200),
                         conv_4_5=F.Convolution2D(200, 200, 1),
+                        bn4_5=F.BatchNormalization(200),
                         conv_4_5_2=F.Convolution2D(200, 200, 1),
-                        conv_5=F.Convolution2D(200, 200, 3),
-                        conv_6=F.Convolution2D(200, 200, 3),
                         linear_1=F.Linear(200, 400, wscale=wscale_1),
                         linear_2=F.Linear(400, num_classes,
                                           wscale=wscale_2)).to_gpu()
 
     optimizer = chainer.optimizers.Adam(learning_rate)
     optimizer.setup(model)
+
     loss_history = []
     train_accuracy_history = []
     test_accuracy_history = []
     loss_test_history = []
+    final_test_losses = []
+    final_test_accuracies = []
     # 学習させるループ
     for epoch in range(max_iteration):
         print "epoch:", epoch
@@ -357,15 +362,13 @@ if __name__ == '__main__':
             epoch_best = epoch
             test_loss_best = test_loss.data
             test_accuracy_best = test_accuracy
-            serializers.save_hdf5("base_convnet_v1.hdf5", model)
+            serializers.save_hdf5("convnet_layer4_max_pooling_BN_v5.hdf5", model)
             print "epoch_best:", epoch_best
             print "test_loss_best:", test_loss_best
             print "test_accuracy_best:", test_accuracy_best
             print
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
-    final_test_losses = []
-    final_test_accuracies = []
     for batch_indexes in np.array_split(np.arange(num_test),
                                         num_test_batches):
         f_x_batch_test = cuda.to_gpu(x_test[batch_indexes])
@@ -381,6 +384,7 @@ if __name__ == '__main__':
 
     print "[final_test] Accuracy:", average_final_test_accuracy
     print "[final_test] Loss:", average_final_test_loss
+    print "[train] Accuracy:", train_accuracy
     print "[train] Loss:", train_loss.data
     print "[best_test] Accuracy:", test_loss_best
     print "[best_test] Loss:", test_loss_best
