@@ -17,6 +17,7 @@ from chainer import cuda
 from chainer.optimizers import SGD, Adam
 from chainer import serializers
 
+
 def loss_and_accuracy(model, x_data, t_data, train=False):
     x = Variable(x_data.reshape(-1, 1, 200, 200))
     t = Variable(t_data)
@@ -199,7 +200,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.0001  # learning_rate(学習率)を定義する
-    max_iteration = 2000      # 学習させる回数
+    max_iteration = 3000      # 学習させる回数
     batch_size = 10       # ミニバッチ1つあたりのサンプル数
     wscale_1 = 1.0
     wscale_2 = 1.0
@@ -361,7 +362,7 @@ if __name__ == '__main__':
             epoch_best = epoch
             test_loss_best = test_loss.data
             test_accuracy_best = test_accuracy
-            serializers.save_hdf5("convnet_layer4_max_pooling_BN_v4.hdf5", model)
+            serializers.save_hdf5("convnet_layer4_max_pooling_BN_v5.hdf5", model)
             print "epoch_best:", epoch_best
             print "test_loss_best:", test_loss_best
             print "test_accuracy_best:", test_accuracy_best
@@ -380,7 +381,6 @@ if __name__ == '__main__':
         final_test_accuracies.append(final_test_accuracy)
     average_final_test_loss = np.array(final_test_losses).mean()
     average_final_test_accuracy = np.array(final_test_accuracies).mean()
-
 
     print "[final_test] Accuracy:", average_final_test_accuracy
     print "[final_test] Loss:", average_final_test_loss
